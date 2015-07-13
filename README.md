@@ -27,7 +27,7 @@ And that's only the beginning! I suppose that for each key, you also have to che
 
 ```php
 $arrayCheck = new \Structure\ArrayS();
-$arrayCheck->setFormat(array("profile" => "[]");
+$arrayCheck->setFormat(array("profile" => "array");
 if (!$arrayCheck->check($c)) {
     throw new \Exception();
 } //...
