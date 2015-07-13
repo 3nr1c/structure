@@ -1,11 +1,15 @@
 # Structure
 
-Structure provides a set of classes to check the data type and format of your variables.
+**Structure** provides a set of classes to check the data type and format of your variables.
+
+## License
+
+**Structure** is provided under the [MIT License](https://raw.githubusercontent.com/3nr1c/structure/master/LICENSE).
 
 # Introduction
 
-If you ever had to check the structure of some variable (maybe it's an array that must have certain keys and
- value types), or an integer that must be within a certain range), you probably have written some code like this:
+Have you ever had to check the structure of some variable? (maybe it's an array that must have certain keys and
+ value types, or an integer that must be within a certain range). If so, you probably have written some code like this:
 
 ```php
 if (!is_array($c)) {
@@ -17,7 +21,7 @@ if (!is_array($c)) {
 } //...
 ```
 
-And that's only the beginning! I suppose that for each key, you have to check also for other keys, and data types.
+And that's only the beginning! I suppose that for each key, you also have to check for other keys, and data types.
 **Structure** helps you with these issues. The previous code becomes:
 
 ```php
@@ -62,7 +66,7 @@ All **Structure** classes have the same constructor:
 public function __construct($data = null, $null = false);
 ```
 
-The $null argument allows the data to be null when running the *check* method.
+The $null argument allows the data to be null when running the ```check``` method.
 All classes have also the following getters / setters:
 
 ```php
@@ -78,7 +82,7 @@ public function getType();
 
 ## Class ScalarS
 
-This class runs the is_scalar() test to a variable.
+This class runs the ```is_scalar()``` test to a variable.
 
 Usage:
 ```php
@@ -88,7 +92,7 @@ $scalar->checkType($var);
 
 ## Class NumericS
 
-This class runs the is_numeric() test to a variable. A range property can be defined, with the following syntax:
+This class runs the ``is_numeric()``` test against a variable. A range property can be defined, with the following syntax:
 
 ```regexp
 /^[\(\[]-?\d+(\.\d+)?,-?\d+(\.\d+)?[\)\]]$/
@@ -101,7 +105,7 @@ That is, it uses the [mathematical notation](https://en.wikipedia.org/wiki/Inter
 * The ')' character indicates a strict (>) upper bound
 * The ')' character indicates a non-strict (>=) upper bound
 
-The parser will raise an *\Exception* if the syntax is not correct. Here are a couple of examples:
+The parser will raise an ```\Exception`` if the syntax is not correct. Here are a couple of examples:
  
 ```php
 $numeric = new \Structure\NumericS();
@@ -117,8 +121,8 @@ $numeric->check(10.42);// false
 
 ## Classes IntegerS and FloatS
 
-They both inherit from NumericS. The only difference is that the **check** method of IntegerS uses is_integer 
-(is more strict), and FloatS uses is_float. Notice this:
+They both inherit from ```NumericS```. The only difference is that the **check** method of IntegerS uses ```is_integer``` 
+(is stricter), and ```FloatS``` uses ```is_float```. Notice this:
 
 ```php
 $numeric = new \Structure\NumericS();
@@ -134,7 +138,7 @@ $integer->check("5");// false
 
 ## Class StringS
 
-This class runs the is_string() test to a variable.
+This class runs the ```is_string()``` test against a variable.
 
 Usage:
 ```php
@@ -156,7 +160,7 @@ public static function isAssociative($data);
 ```
 ### setFormat
 
-The $format argument can have many forms. The type must always be **array** or **string**. The string type is used to 
+The $format argument can have many forms. The type must always be ```array``` or ```string```. The string type is used to 
 define simple arrays, such as
 
 ```php
@@ -167,7 +171,7 @@ $array->setFormat("MyClass[3]");
 ```
 
 The array type is used to represent more complex array structures. If you expect an array to be sequential (i.e., not
-key-value), the format should be an array of types. Again, if all array elements have to be the same type, the syntax
+key-value), the format should be an array of types. Again, if all array elements have to be of the same type, the syntax
 above is recommended.
 
 ```php
@@ -181,9 +185,9 @@ $array->setFormat(array(
 ```
 
 Finally, you can define required keys for an associative array. Warning: if the array has some keys you do not want
-to check, make sure you run the *$array->setCountStrict(false)* command.
+to check, make sure you run the ```$array->setCountStrict(false)``` command.
  
-```
+```php
 $array->setFormat(array(
     "foo" => "string"
     "bar" => "int[3,10)"
