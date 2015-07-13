@@ -1,0 +1,27 @@
+{
+  "name": "efz1005/structure",
+  "version": "0.1",
+  "authors": [
+    {
+      "name": "Enric Florit",
+      "email": "enric@skibeta.com",
+      "homepage": "http://www.enricflorit.com",
+      "role": "Developer"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "4.7.0"
+  },
+  "description": "Structure provides a set of classes to check the data type and format of your variables.",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Structure\\": "src/Structure/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --configuration phpunit.xml"
+  }
+}
