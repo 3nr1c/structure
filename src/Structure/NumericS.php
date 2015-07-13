@@ -15,6 +15,10 @@ class NumericS extends ScalarS {
     protected $upperBound;
     protected $upperStrict;
 
+    /**
+     * @param mixed $data
+     * @param bool $null
+     */
     public function __construct($data = null, $null = false) {
         parent::__construct($data, $null);
         $this->setType("numeric");
@@ -98,6 +102,9 @@ class NumericS extends ScalarS {
         $this->upperStrict = $rangeInformation[3];
     }
 
+    /**
+     * @return string
+     */
     public function getRange() {
         return $this->range;
     }

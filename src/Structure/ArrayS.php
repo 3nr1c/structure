@@ -17,7 +17,7 @@ class ArrayS extends Structure {
     }
 
     /**
-     * @param array $format
+     * @param array|string[] $format
      * @throws \Exception
      */
     public function setFormat($format) {

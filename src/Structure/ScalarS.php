@@ -8,6 +8,10 @@ namespace Structure;
 
 
 class ScalarS extends Structure {
+    /**
+     * @param mixed $data
+     * @param bool $null
+     */
     public function __construct($data = null, $null = false) {
         parent::__construct("scalar", $data, $null);
     }

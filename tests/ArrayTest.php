@@ -27,6 +27,27 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($array->check($incorrect5));
     }
 
+    public function testArraySeq2() {
+        $format = array(
+            "int",
+            "string",
+            array("foo" => "integer[1,3]")
+        );
+
+        $array = new \Structure\ArrayS();
+        $array->setFormat($format);
+
+        $correct = array(
+            51,
+            "hello",
+            array(
+                "foo" => 3
+            )
+        );
+
+        $this->assertTrue($array->check($correct));
+    }
+
     public function testArrayAssoc1() {
         $format = array(
             "foo" => "integer",
@@ -155,5 +176,32 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $array->setFormat("[]");
         $this->assertTrue($array->check(array()));
         $this->assertTrue($array->check(array(1, "a", 13.2)));
+    }
+
+    public function testGeneral1() {
+        $arrayCheck = new \Structure\ArrayS();
+        $arrayCheck->setFormat(array(
+            "id" => "int",
+            "rating" => "float[0,10]",
+            "title" => array(
+                "en" => "str",
+                "es" => "str"
+            ),
+            "links" => "string[]",
+            "subtitles" => "bool"
+        ));
+
+        $data = array(
+            "id" => 1190080,
+            "rating" => 5.8,
+            "title" => array(
+                "en" => "2012",
+                "es" => "2012"
+            ),
+            "links" => array("http://www.imdb.com/title/tt1190080/?ref_=fn_al_tt_1"),
+            "subtitles" => true
+        );
+
+        $this->assertTrue($arrayCheck->check($data));
     }
 }

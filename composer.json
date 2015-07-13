@@ -22,6 +22,7 @@
     }
   },
   "scripts": {
-    "test": "vendor/bin/phpunit --configuration phpunit.xml"
+    "test": "vendor/bin/phpunit --configuration phpunit.xml",
+    "doc": "phpdoc -d ./ --ignore vendor/ --ignore test/ -t docs/"
   }
 }

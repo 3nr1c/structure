@@ -12,6 +12,11 @@ abstract class Structure {
     protected $type;
     protected $null;
 
+    /**
+     * @param string $type
+     * @param mixed $data
+     * @param bool $null
+     */
     public function __construct($type = "", $data = null, $null = false) {
         $this->setType($type);
         $this->setData($data);
@@ -33,28 +38,28 @@ abstract class Structure {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getType() {
         return $this->type;
     }
 
     /**
-     * @param mixed $type
+     * @param string $type
      */
     public function setType($type) {
         $this->type = $type;
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getNull() {
         return $this->null;
     }
 
     /**
-     * @param mixed $null
+     * @param bool $null
      */
     public function setNull($null) {
         $this->null = $null;
