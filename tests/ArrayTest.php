@@ -127,7 +127,7 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
             "a" => array(1, 3, 4)
         );
 
-        $incorrect = array(
+        $incorrect1 = array(
             "foo" => 3.4,
             "bar" => array(
                 "test",
@@ -136,8 +136,18 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
             "a" => array(1, 3, 4)
         );
 
+        $incorrect2 = array(
+            "foo" => 3.4,
+            "bar" => array(
+                "test",
+                4
+            ),
+            "a" => array(1., 3, 4)
+        );
+
         $this->assertTrue($array->check($correct));
-        $this->assertFalse($array->check($incorrect));
+        $this->assertFalse($array->check($incorrect1));
+        $this->assertFalse($array->check($incorrect2));
     }
 
     public function testArraySimple3() {

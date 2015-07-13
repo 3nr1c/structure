@@ -100,6 +100,7 @@ class ArrayS extends Structure {
                 if (!array_key_exists($key, $this->data)) {
                     $valid = false;
                 } else {
+                    //var_export($value);
                     $valid = $this->checkValue($this->data[$key], $value);
                 }
                 if (!$valid) return false;
@@ -179,7 +180,14 @@ class ArrayS extends Structure {
                         if (class_exists($format)) {
                             $valid = $data instanceof $format;
                         } else {
-                            $valid = true;
+                            try {
+                                // maybe $format is a simple array (type[] or type[int])
+                                $a = new ArrayS($data, $this->getNull());
+                                $a->setFormat($format);
+                                $valid = $a->check();
+                            } catch (\Exception $e){
+                                $valid = true;
+                            }
                         }
                         break;
                 }
