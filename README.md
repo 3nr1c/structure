@@ -196,7 +196,7 @@ $array->setFormat(array(
     "bar" => "int[3,10)"
     "abc" => "array",
     "xyz" => array(
-        "integer[]"
+        "integer[]",
         array(
             "hello" => "bool"
         )
