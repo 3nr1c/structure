@@ -8,8 +8,9 @@ namespace Structure;
 
 
 class ArrayS extends Structure {
-    private $format;
+    protected $format;
     private $stringFormat = false;
+    protected $countStrict = true;
 
     public function __construct($data = null, $null = false) {
         parent::__construct("array", $data, $null);
@@ -52,6 +53,20 @@ class ArrayS extends Structure {
         return $this->format;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isCountStrict() {
+        return $this->countStrict;
+    }
+
+    /**
+     * @param boolean $countStrict
+     */
+    public function setCountStrict($countStrict) {
+        $this->countStrict = $countStrict;
+    }
+
     public function checkType($data = null) {
         if (!is_null($data)) $this->data = $data;
 
@@ -75,7 +90,7 @@ class ArrayS extends Structure {
             return true;
         }
 
-        if (count($this->data) !== count($this->format)) return false;
+        if ($this->isCountStrict() && count($this->data) !== count($this->format)) return false;
 
         $associativeData = ArrayS::isAssociative($this->data);
         $associativeFormat = ArrayS::isAssociative($this->format);
