@@ -9,6 +9,7 @@ namespace Structure;
 
 class ArrayS extends Structure {
     private $format;
+    private $stringFormat = false;
 
     public function __construct($data = null, $null = false) {
         parent::__construct("array", $data, $null);
@@ -16,9 +17,32 @@ class ArrayS extends Structure {
 
     /**
      * @param array $format
+     * @throws \Exception
      */
     public function setFormat($format) {
-        $this->format = $format;
+        if (is_array($format)) {
+            $this->stringFormat = false;
+            $this->format = $format;
+        } else if (is_string($format)) {
+            // /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]$/ -> class name, provided by php
+            $class = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
+
+            $types = '/^(' .$class. '|\*)?\[\]$/';
+            $typesN = '/^(' .$class. '|\*)?\[(\d+)\]$/';
+            if (preg_match($types, $format)) {
+                $this->stringFormat = true;
+                $this->format = str_replace("[]", "", $format);
+            } else if (preg_match($typesN, $format)) {
+                $this->stringFormat = true;
+                $split = explode("[", $format);
+                $type = $split[0];
+                $n = str_replace("]", "", $split[1]);
+
+                $this->format = array_fill(0, $n, $type);
+            } else {
+                throw new \Exception("Invalid string: \$format");
+            }
+        }
     }
 
     /**
@@ -42,6 +66,14 @@ class ArrayS extends Structure {
      */
     public function checkFormat($data = null) {
         if (!is_null($data)) $this->data = $data;
+
+        if (is_string($this->format)) {
+            foreach ($this->data as $value) {
+                $valid = $this->checkValue($value, $this->format);
+                if (!$valid) return false;
+            }
+            return true;
+        }
 
         if (count($this->data) !== count($this->format)) return false;
 
@@ -78,7 +110,7 @@ class ArrayS extends Structure {
     }
 
     protected function checkValue($data, $format) {
-        $numeric = '/^(numeric|float|integer)(\(|\[)-?\d+(\.\d+)?,-?\d+(\.\d+)?(\)|\])$/';
+        $numeric = '/^(numeric|float|integer|int)(\(|\[)-?\d+(\.\d+)?,-?\d+(\.\d+)?(\)|\])$/';
 
         if (is_null($data)) {
             $valid = $this->getNull();

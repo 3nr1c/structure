@@ -90,4 +90,60 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($array->check($correct));
     }
+
+    public function testArraySimple1() {
+        $array = new \Structure\ArrayS();
+        $array->setFormat("int[]");
+
+        $this->assertTrue($array->check(array(1, 2, 3, 4, 5, 6)));
+        $this->assertFalse($array->check(array(1, 2., 3, 4, 5, 6)));
+
+        $array->setFormat("int[3]");
+
+        $this->assertTrue($array->check(array(1, 2, 3)));
+        $this->assertFalse($array->check(array(1, 2, 6, 4)));
+        $this->assertFalse($array->check(array(1, 2.6, 4)));
+    }
+
+    public function testArraySimple2() {;
+        $format = array(
+            "foo" => "numeric",
+            "bar" => array(
+                "string",
+                "integer[3,5)"
+            ),
+            "a" => "int[]"
+        );
+
+        $array = new \Structure\ArrayS();
+        $array->setFormat($format);
+
+        $correct = array(
+            "foo" => 3.4,
+            "bar" => array(
+                "test",
+                4
+            ),
+            "a" => array(1, 3, 4)
+        );
+
+        $incorrect = array(
+            "foo" => 3.4,
+            "bar" => array(
+                "test",
+                5//it must be STRICTLY less than 5
+            ),
+            "a" => array(1, 3, 4)
+        );
+
+        $this->assertTrue($array->check($correct));
+        $this->assertFalse($array->check($incorrect));
+    }
+
+    public function testArraySimple3() {
+        $array = new \Structure\ArrayS();
+        $array->setFormat("[]");
+        $this->assertTrue($array->check(array()));
+        $this->assertTrue($array->check(array(1, "a", 13.2)));
+    }
 }
