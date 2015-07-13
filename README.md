@@ -92,7 +92,7 @@ $scalar->checkType($var);
 
 ## Class NumericS
 
-This class runs the ``is_numeric()``` test against a variable. A range property can be defined, with the following syntax:
+This class runs the ```is_numeric()``` test against a variable. A range property can be defined, with the following syntax:
 
 ```regexp
 /^[\(\[]-?\d+(\.\d+)?,-?\d+(\.\d+)?[\)\]]$/
@@ -105,7 +105,7 @@ That is, it uses the [mathematical notation](https://en.wikipedia.org/wiki/Inter
 * The ')' character indicates a strict (>) upper bound
 * The ')' character indicates a non-strict (>=) upper bound
 
-The parser will raise an ```\Exception`` if the syntax is not correct. Here are a couple of examples:
+The parser will raise an ```\Exception``` if the syntax is not correct. Here are a couple of examples:
  
 ```php
 $numeric = new \Structure\NumericS();
