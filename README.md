@@ -119,6 +119,8 @@ $numeric->check(5);// true
 $numeric->check(10.42);// false
 ```
 
+The left number must be *less than or equal to* the right number. 
+
 ## Classes IntegerS and FloatS
 
 They both inherit from ```NumericS```. The only difference is that the **check** method of IntegerS uses ```is_integer``` 
