@@ -1,9 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: enric
- * Date: 13/7/15
- * Time: 16:24
+ * @author Enric Florit
+ * @date 13/7/15
  */
 
 namespace Structure;
