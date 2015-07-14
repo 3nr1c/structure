@@ -180,6 +180,7 @@ class ArrayS extends Structure {
                     case "array":
                         $structure = new ArrayS();
                         $structure->setFormat("array");
+                        $structure->setCountStrict($this->countStrict);
                         break;
                     case "*":
                     case "any":
@@ -194,6 +195,7 @@ class ArrayS extends Structure {
                             // maybe $format is a simple array (type[] or type[int])
                             $structure = new ArrayS();
                             $structure->setFormat($format);
+                            $structure->setCountStrict($this->countStrict);
                         }
                         break;
                 }
