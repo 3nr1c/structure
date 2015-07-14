@@ -75,7 +75,7 @@ class ArrayS extends Structure {
 
     public function check($data = null) {
         if ($this->getNull()) {
-            return (is_null($this->data) || $this->checkType($data)) && $this->checkFormat($data);
+            return is_null($this->data) || ($this->checkType($data) && $this->checkFormat($data));
         } else {
             return $this->checkType($data) && $this->checkFormat($data);
         }
@@ -130,7 +130,10 @@ class ArrayS extends Structure {
             return true;
         }
 
-        if ($this->isCountStrict() && count($this->data) !== count($this->format)) return false;
+        if (!$this->getNull() && $this->isCountStrict() && count($this->data) !== count($this->format)){
+            print "\n";
+            return false;
+        }
 
         $associativeData = ArrayS::isAssociative($this->data);
         $associativeFormat = ArrayS::isAssociative($this->format);
@@ -241,6 +244,12 @@ class ArrayS extends Structure {
                         return $structure->format($data);
                     } else if (!isset($valid)) {
                         try {
+                            /*var_export($this->getNull());
+                            var_export($structure->getNull());
+                            print "\n";*/
+                            if (count($this->data) == 0) {
+                                var_export($this->getNull());
+                            }
                             $valid = $structure->check($data);
                         } catch (\Exception $e) {
                             $valid = false;
@@ -281,7 +290,7 @@ class ArrayS extends Structure {
 
         if ($associativeData && $associativeFormat) {
             foreach ($this->getFormat() as $key=>$value) {
-                if (!array_key_exists($key, $this->data)) {
+                if (!array_key_exists($key, $this->data) && !$this->null) {
                     throw new \Exception("Non existent key '" . $key . "'");
                 } else {
                     $this->data[$key] = $this->checkValue($this->data[$key], $value, true);

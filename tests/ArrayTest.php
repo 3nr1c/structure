@@ -230,4 +230,23 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $array->setCountStrict(false);
         $this->assertTrue($array->check($data));
     }
+
+    public function testNull1() {
+        $array = new \Structure\ArrayS();
+        $array->setFormat(array(
+            "foo" => "float"
+        ));
+
+        $this->assertFalse($array->check(array()));
+    }
+
+    public function testNull2() {
+        $array = new \Structure\ArrayS();
+        $array->setFormat(array(
+            "foo" => "float"
+        ));
+        $array->setNull(true);
+
+        $this->assertTrue($array->check(array()));
+    }
 }

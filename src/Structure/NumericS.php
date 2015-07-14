@@ -148,8 +148,9 @@ class NumericS extends ScalarS {
      * @return bool
      */
     public function check($data = null) {
+            //var_export($this->getNull());
         if ($this->getNull()) {
-            return (is_null($this->data) || $this->checkType($data)) && $this->checkRange($data);
+            return is_null($this->data) || ($this->checkType($data) && $this->checkRange($data));
         } else {
             return $this->checkType($data) && $this->checkRange($data);
         }
