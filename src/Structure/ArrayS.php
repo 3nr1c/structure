@@ -23,6 +23,11 @@ class ArrayS extends Structure {
         if (is_array($format)) {
             $this->format = $format;
         } else if (is_string($format)) {
+            if ($format === "array") {
+                $this->format = $format;
+                return;
+            }
+
             // /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]$/ -> class name, provided by php
             $class = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
 
@@ -36,8 +41,6 @@ class ArrayS extends Structure {
                 $n = str_replace("]", "", $split[1]);
 
                 $this->format = array_fill(0, $n, $type);
-            } else {
-                throw new \Exception("Invalid string: \$format");
             }
 
             if ($this->format === "") $this->format = "*";
@@ -80,6 +83,10 @@ class ArrayS extends Structure {
     public function checkFormat($data = null) {
         if (!is_null($data)) $this->data = $data;
 
+        if ($this->format === "array") {
+            return is_array($this->data);
+        }
+
         if (is_string($this->format)) {
             foreach ($this->data as $value) {
                 $valid = $this->checkValue($value, $this->format);
@@ -98,14 +105,13 @@ class ArrayS extends Structure {
                 if (!array_key_exists($key, $this->data)) {
                     $valid = false;
                 } else {
-                    //var_export($value);
                     $valid = $this->checkValue($this->data[$key], $value);
                 }
                 if (!$valid) return false;
             }
             return true;
         } else if (!$associativeData && !$associativeFormat) {
-            for ($i = 0; $i < count($this->format); $i++) {
+            for ($i = 0; $i < count($this->data); $i++) {
                 $valid = $this->checkValue($this->data[$i], $this->format[$i]);
                 if (!$valid) return false;
             }
@@ -123,7 +129,7 @@ class ArrayS extends Structure {
         }
     }
 
-    protected function checkValue($data, $format) {
+    protected function checkValue($data, $format, $applyFormat = false) {
         $numeric = '/^(numeric|float|integer|int)(\(|\[)-?\d+(\.\d+)?,-?\d+(\.\d+)?(\)|\])$/';
 
         if (is_null($data)) {
@@ -143,51 +149,69 @@ class ArrayS extends Structure {
                 }
                 /** @var NumericS $structure */
                 $structure->setRange(preg_replace("/^(numeric|float|integer)/", "", $format));
-                $valid = $structure->check($data);
+                if ($applyFormat) {
+                    return $structure->format($data);
+                } else {
+                    $valid = $structure->check($data);
+                }
             } else {
                 switch ($format) {
                     case "scalar":
-                        $valid = is_scalar($data);
+                        $structure = new ScalarS();
                         break;
                     case "string":
                     case "str":
-                        $valid = is_string($data);
+                        $structure = new StringS();
                         break;
                     case "numeric":
-                        $valid = is_numeric($data);
+                        $structure = new NumericS();
                         break;
                     case "integer":
                     case "int":
-                        $valid = is_integer($data);
+                        $structure = new IntegerS();
                         break;
                     case "float":
-                        $valid = is_float($data);
+                        $structure = new FloatS();
                         break;
                     case "boolean":
                     case "bool":
-                        $valid = is_bool($data);
+                        $structure = new BooleanS();
                         break;
                     case "array":
-                        $valid = is_array($data);
+                        $structure = new ArrayS();
+                        $structure->setFormat("array");
                         break;
                     case "*":
                     case "any":
+                        if ($applyFormat) return $data;
                         $valid = true;
                         break;
                     default:
                         if (class_exists($format)) {
+                            if ($applyFormat) return $data;
                             $valid = $data instanceof $format;
                         } else {
-                            try {
-                                // maybe $format is a simple array (type[] or type[int])
-                                $a = new ArrayS($data, $this->getNull());
-                                $a->setFormat($format);
-                                $valid = $a->check();
-                            } catch (\Exception $e){
-                                $valid = false;
-                            }
+                            // maybe $format is a simple array (type[] or type[int])
+                            $structure = new ArrayS();
+                            $structure->setFormat($format);
                         }
                         break;
+                }
+                /** @var Structure $structure */
+                if (isset($structure)){
+                    $structure->setNull($this->getNull());
+
+                    if ($applyFormat) {
+                        return $structure->format($data);
+                    } else if (!isset($valid)) {
+                        try {
+                            $valid = $structure->check($data);
+                        } catch (\Exception $e) {
+                            $valid = false;
+                        }
+                    }
+                } else {
+                    $valid = true;
                 }
             }
         } else if (is_array($format)) {
@@ -199,6 +223,52 @@ class ArrayS extends Structure {
         }
 
         return $valid;
+    }
+
+    protected function applyFormat() {
+        if (is_string($this->format)) {
+            foreach ($this->data as &$value) {
+                $value = $this->checkValue($value, $this->format, true);
+            }
+        }
+
+        if ($this->isCountStrict() && count($this->data) !== count($this->format)) return false;
+
+        $associativeData = ArrayS::isAssociative($this->data);
+        $associativeFormat = ArrayS::isAssociative($this->format);
+
+        if ($associativeData && $associativeFormat) {
+            foreach ($this->getFormat() as $key=>$value) {
+                if (!array_key_exists($key, $this->data)) {
+                    throw new \Exception("Non existent key '" . $key . "'");
+                } else {
+                    $this->data[$key] = $this->checkValue($this->data[$key], $value, true);
+                }
+            }
+            return true;
+        } else if (!$associativeData && !$associativeFormat) {
+            for ($i = 0; $i < count($this->format); $i++) {
+                $this->data[$i] = $this->checkValue($this->data[$i], $this->format[$i], true);
+            }
+        } else {
+            if ($associativeData) {
+                throw new \Exception("Error to trying to format an associative array to sequential");
+            } else {
+                throw new \Exception("Error to trying to format a sequential array to associative");
+            }
+        }
+    }
+
+    public function format($data = null, $format = null) {
+        if (!is_null($data)) $this->setData($data);
+        if (!is_null($format)) $this->setFormat($format);
+
+        if (!is_array($this->data)) {
+            throw new \Exception("Array format only available for arrays");
+        }
+
+        $this->applyFormat();
+        return $this->data;
     }
 
     /**
