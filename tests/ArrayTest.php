@@ -124,6 +124,10 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($array->check(array(1, 2, 3)));
         $this->assertFalse($array->check(array(1, 2, 6, 4)));
         $this->assertFalse($array->check(array(1, 2.6, 4)));
+
+        $array->setFormat(array("foo" => "[]"));
+        $this->assertTrue($array->check(array("foo" => array())));
+        $this->assertFalse($array->check(array("foo" => 10)));
     }
 
     public function testArraySimple2() {;

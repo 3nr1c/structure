@@ -9,7 +9,6 @@ namespace Structure;
 
 class ArrayS extends Structure {
     protected $format;
-    private $stringFormat = false;
     protected $countStrict = true;
 
     public function __construct($data = null, $null = false) {
@@ -22,7 +21,6 @@ class ArrayS extends Structure {
      */
     public function setFormat($format) {
         if (is_array($format)) {
-            $this->stringFormat = false;
             $this->format = $format;
         } else if (is_string($format)) {
             // /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]$/ -> class name, provided by php
@@ -31,10 +29,8 @@ class ArrayS extends Structure {
             $types = '/^(' .$class. '|\*)?\[\]$/';
             $typesN = '/^(' .$class. '|\*)?\[(\d+)\]$/';
             if (preg_match($types, $format)) {
-                $this->stringFormat = true;
                 $this->format = str_replace("[]", "", $format);
             } else if (preg_match($typesN, $format)) {
-                $this->stringFormat = true;
                 $split = explode("[", $format);
                 $type = $split[0];
                 $n = str_replace("]", "", $split[1]);
@@ -43,6 +39,8 @@ class ArrayS extends Structure {
             } else {
                 throw new \Exception("Invalid string: \$format");
             }
+
+            if ($this->format === "") $this->format = "*";
         }
     }
 
@@ -186,7 +184,7 @@ class ArrayS extends Structure {
                                 $a->setFormat($format);
                                 $valid = $a->check();
                             } catch (\Exception $e){
-                                $valid = true;
+                                $valid = false;
                             }
                         }
                         break;
