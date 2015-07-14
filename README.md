@@ -7,6 +7,19 @@
 
 **Structure** is provided under the [MIT License](https://raw.githubusercontent.com/3nr1c/structure/master/LICENSE).
 
+## Installation
+
+You can install Structure into your project using [Composer](http://getcomposer.org). Using the latest release is
+  highly recommendable. You can start usign it by adding the following to your **composer.json**:
+  
+```json
+"require":{
+    "3nr1c/structure": "v0.1"
+}
+```
+
+You can also use the ```"dev-master"``` version at your own risk. The code in this version can change at any time.
+
 # Introduction
 
 Have you ever had to check the structure of some variable? (maybe it's an array that must have certain keys and
