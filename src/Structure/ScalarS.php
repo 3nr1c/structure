@@ -42,8 +42,25 @@ class ScalarS extends Structure {
                 return is_integer($this->getData());
             case "float":
                 return is_float($this->getData());
-            case "bool":
+            case "boolean":
                 return is_bool($this->getData());
         }
+    }
+
+    /**
+     * @param mixed $data
+     * @return boolean
+     */
+    public function check($data = null) {
+        return $this->checkType($data);
+    }
+
+    /**
+     * @param mixed $data
+     * @return mixed
+     */
+    public function format($data = null) {
+        settype($data, $this->getType());
+        return $data;
     }
 }

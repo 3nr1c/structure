@@ -16,4 +16,8 @@ class IntegerS extends NumericS {
         parent::__construct($data, $null);
         $this->setType("integer");
     }
+
+    public function format($data = null) {
+        return intval($data);
+    }
 }

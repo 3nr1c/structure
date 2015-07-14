@@ -149,4 +149,22 @@ class NumericS extends ScalarS {
             return $this->checkType($data) && $this->checkRange($data);
         }
     }
+
+    public function format($data = null) {
+        $validType = $this->checkType($data);
+        $validRange = $this->checkRange($data);
+
+        if ($validType && $validRange) {
+            return $data;
+        } else if ($validType && !$validRange) {
+            throw new \Exception("Unable to format " . $this->getType() . " to range" . $this->getRange());
+        } else if (!$validType) {
+            if (!settype($data, $this->getType())) {
+                $data = (float)$data;
+            }
+            $validRange = $this->checkRange($data);
+            if ($validRange) return $data;
+            else throw new \Exception("Unable to format " . $this->getType() . " to range" . $this->getRange());
+        }
+    }
 }

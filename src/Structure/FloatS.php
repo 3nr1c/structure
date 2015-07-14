@@ -16,4 +16,8 @@ class FloatS extends NumericS {
         parent::__construct($data, $null);
         $this->setType("float");
     }
+
+    public function format($data = null) {
+        return floatval($data);
+    }
 }

@@ -18,4 +18,8 @@ class StringS extends ScalarS {
         parent::__construct($data, $null);
         $this->setType("string");
     }
+
+    public function format($data = null) {
+        return (string)$data;
+    }
 }
