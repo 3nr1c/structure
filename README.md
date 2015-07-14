@@ -117,7 +117,7 @@ That is, it uses the [mathematical notation](https://en.wikipedia.org/wiki/Inter
 * The '(' character indicates a strict (<) lower bound
 * The '[' character indicates a non-strict (<=) lower bound
 * The ')' character indicates a strict (>) upper bound
-* The ')' character indicates a non-strict (>=) upper bound
+* The ']' character indicates a non-strict (>=) upper bound
 
 The parser will raise an ```\Exception``` if the syntax is not correct. Here are a couple of examples:
  
@@ -230,3 +230,4 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 * [ ] Improvement for ranges: infinities
 * [ ] Objects: attributes (name, visibility) and methods (name, visibility, parameters)
 * [ ] Regexp for strings
+* [ ] Enum type: "{1,2,10,3}"

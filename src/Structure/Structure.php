@@ -66,4 +66,13 @@ abstract class Structure {
     }
 
     abstract public function checkType();
+
+    public static function ArrayS($format, $data = null, $countStrict = true, $null = false) {
+        $array = new ArrayS();
+        $array->setFormat($format);
+        $array->setData($data = null);
+        $array->setCountStrict($countStrict);
+        $array->setNull($null);
+        return $array;
+    }
 }
