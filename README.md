@@ -10,7 +10,7 @@
 ## Installation
 
 You can install Structure into your project using [Composer](http://getcomposer.org). Using the latest release is
-  highly recommendable. You can start usign it by adding the following to your **composer.json**:
+  highly recommendable. You can start using it by adding the following to your **composer.json**:
   
 ```json
 "require":{
