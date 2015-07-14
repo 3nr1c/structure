@@ -14,7 +14,7 @@ You can install Structure into your project using [Composer](http://getcomposer.
   
 ```json
 "require":{
-    "3nr1c/structure": "v0.1"
+    "3nr1c/structure": "v0.2"
 }
 ```
 
@@ -81,18 +81,36 @@ public function __construct($data = null, $null = false);
 ```
 
 The $null argument allows the data to be null when running the ```check``` method.
-All classes have also the following getters / setters:
+All classes have also the following methods:
 
 ```php
 public function setData($data);
 public function getData();
+
+// to avoid the data to be null:
 public function setNull($null);
 public function getNull();
 
-// Not the actual type, shouldn't be used outside the classes
-public function setType($type);
-public function getType();
+// to check everything (type and range/format)
+public function check($data = null);
+
+// to format things (specially powerfull in ArrayS)
+public function format($data = null);
 ```
+
+## Static shortcuts
+
+The main Structure class provides four static methods to quickly generate checkers:
+
+```php
+public static function ArrayS($format = null, $data = null, $countStrict = true, $null = false);
+public static function NumericS($range = null, $data = null, $null = false);
+public static function IntegerS($range = null, $data = null, $null = false);
+public static function FloatS($range = null, $data = null, $null = false);
+```
+
+All these methods return respectively an ArrayS, NumericS, IntegerS or FloatS object, with the
+ properties set as passed by the arguments.
 
 ## Class ScalarS
 
@@ -101,7 +119,7 @@ This class runs the ```is_scalar()``` test to a variable.
 Usage:
 ```php
 $scalar = new \Structure\ScalarS();
-$scalar->checkType($var);
+$scalar->check($var);
 ```
 
 ## Class NumericS
@@ -159,7 +177,7 @@ This class runs the ```is_string()``` test against a variable.
 Usage:
 ```php
 $string = new \Structure\StringS();
-$string->checkType($var);
+$string->check($var);
 ```
 
 ## Class ArrayS
@@ -224,7 +242,7 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 
 # Planned features
 
-* [ ] Quick static functions for type testing (ArrayS::check())
+* [x] Quick static functions for type testing (ArrayS::check())
 * [ ] Date formats: timestamp, mysql date/time/datetime, standard times
 * [ ] Email, ip, hash formats
 * [ ] Improvement for ranges: infinities

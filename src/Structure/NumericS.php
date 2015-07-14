@@ -1,6 +1,11 @@
 <?php
 /**
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
  * @author Enric Florit
+ * @since 0.1.0
  * @date 13/7/15
  */
 
@@ -114,7 +119,7 @@ class NumericS extends ScalarS {
      * @param integer|float $data
      * @return bool
      */
-    public function checkRange($data = null) {
+    protected function checkRange($data = null) {
         if (is_null($this->range)) return true;
 
         if (!is_null($data)) {
@@ -150,6 +155,11 @@ class NumericS extends ScalarS {
         }
     }
 
+    /**
+     * @param mixed $data
+     * @return float
+     * @throws \Exception
+     */
     public function format($data = null) {
         $validType = $this->checkType($data);
         $validRange = $this->checkRange($data);

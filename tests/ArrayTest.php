@@ -1,9 +1,12 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: enric
- * Date: 13/7/15
- * Time: 17:20
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author Enric Florit
+ * @since 0.1.0
+ * @date 13/7/15
  */
 
 class ArrayTest extends PHPUnit_Framework_TestCase {
@@ -207,5 +210,24 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         );
 
         $this->assertTrue($arrayCheck->check($data));
+    }
+
+    public function testStrictCount1() {
+        $array = new \Structure\ArrayS();
+        $array->setFormat(array(
+            "foo" => "string"
+        ));
+
+        $data = array(
+            "foo" => "expected key",
+            "bar" => "unexpected key",
+            "xyz" => array(
+                "something", 3, false, true, 3.2
+            )
+        );
+
+        $this->assertFalse($array->check($data));
+        $array->setCountStrict(false);
+        $this->assertTrue($array->check($data));
     }
 }

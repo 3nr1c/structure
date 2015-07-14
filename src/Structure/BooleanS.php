@@ -1,9 +1,12 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: enric
- * Date: 14/7/15
- * Time: 14:52
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author Enric Florit
+ * @since 0.2.0
+ * @date 14/7/15
  */
 
 namespace Structure;
@@ -19,7 +22,16 @@ class BooleanS extends ScalarS {
         $this->setType("boolean");
     }
 
+    /**
+     * @param mixed $data
+     * @return bool
+     */
     public function format($data = null) {
-        return boolval($data);
+        if (is_string($data)) {
+            // All strings (except "") evaluate true with boolval
+            return $data === "true";
+        } else {
+            return boolval($data);
+        }
     }
 }

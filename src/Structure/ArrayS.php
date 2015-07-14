@@ -1,6 +1,11 @@
 <?php
 /**
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
  * @author Enric Florit
+ * @since 0.1.0
  * @date 13/7/15
  */
 
@@ -68,7 +73,37 @@ class ArrayS extends Structure {
         $this->countStrict = $countStrict;
     }
 
-    public function checkType($data = null) {
+    public function check($data = null) {
+        if ($this->getNull()) {
+            return (is_null($this->data) || $this->checkType($data)) && $this->checkFormat($data);
+        } else {
+            return $this->checkType($data) && $this->checkFormat($data);
+        }
+    }
+
+    /**
+     * @param mixed $data
+     * @param mixed $format
+     * @return array
+     * @throws \Exception
+     */
+    public function format($data = null, $format = null) {
+        if (!is_null($data)) $this->setData($data);
+        if (!is_null($format)) $this->setFormat($format);
+
+        if (!is_array($this->data)) {
+            throw new \Exception("Array format only available for arrays");
+        }
+
+        $this->applyFormat();
+        return $this->data;
+    }
+
+    /**
+     * @param mixed $data
+     * @return bool
+     */
+    protected function checkType($data = null) {
         if (!is_null($data)) $this->data = $data;
 
         return is_array($this->data);
@@ -80,7 +115,7 @@ class ArrayS extends Structure {
      * @return bool
      * @throws \Exception
      */
-    public function checkFormat($data = null) {
+    protected function checkFormat($data = null) {
         if (!is_null($data)) $this->data = $data;
 
         if ($this->format === "array") {
@@ -121,14 +156,13 @@ class ArrayS extends Structure {
         }
     }
 
-    public function check($data = null) {
-        if ($this->getNull()) {
-            return (is_null($this->data) || $this->checkType($data)) && $this->checkFormat($data);
-        } else {
-            return $this->checkType($data) && $this->checkFormat($data);
-        }
-    }
-
+    /**
+     * @param mixed $data
+     * @param mixed $format
+     * @param bool $applyFormat
+     * @return bool
+     * @throws \Exception
+     */
     protected function checkValue($data, $format, $applyFormat = false) {
         $numeric = '/^(numeric|float|integer|int)(\(|\[)-?\d+(\.\d+)?,-?\d+(\.\d+)?(\)|\])$/';
 
@@ -227,14 +261,20 @@ class ArrayS extends Structure {
         return $valid;
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function applyFormat() {
         if (is_string($this->format)) {
             foreach ($this->data as &$value) {
                 $value = $this->checkValue($value, $this->format, true);
             }
+            return true;
         }
 
-        if ($this->isCountStrict() && count($this->data) !== count($this->format)) return false;
+        if ($this->isCountStrict() && count($this->data) !== count($this->format)) {
+            throw new \Exception("countStrict doesn't allow comparisons between \$data and \$format");
+        }
 
         $associativeData = ArrayS::isAssociative($this->data);
         $associativeFormat = ArrayS::isAssociative($this->format);
@@ -252,6 +292,7 @@ class ArrayS extends Structure {
             for ($i = 0; $i < count($this->format); $i++) {
                 $this->data[$i] = $this->checkValue($this->data[$i], $this->format[$i], true);
             }
+            return true;
         } else {
             if ($associativeData) {
                 throw new \Exception("Error to trying to format an associative array to sequential");
@@ -259,18 +300,6 @@ class ArrayS extends Structure {
                 throw new \Exception("Error to trying to format a sequential array to associative");
             }
         }
-    }
-
-    public function format($data = null, $format = null) {
-        if (!is_null($data)) $this->setData($data);
-        if (!is_null($format)) $this->setFormat($format);
-
-        if (!is_array($this->data)) {
-            throw new \Exception("Array format only available for arrays");
-        }
-
-        $this->applyFormat();
-        return $this->data;
     }
 
     /**

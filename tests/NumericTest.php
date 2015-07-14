@@ -1,25 +1,30 @@
 <?php
 /**
-* @author Enric Florit
-* @date 13/7/15
-*/
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author Enric Florit
+ * @since 0.1.0
+ * @date 13/7/15
+ */
 
 class NumericTest extends PHPUnit_Framework_TestCase {
     public function testType() {
         $numeric = new \Structure\NumericS();
 
-        $this->assertTrue($numeric->checkType(3));
+        $this->assertTrue($numeric->check(3));
 
-        $this->assertTrue($numeric->checkType(3.2));
+        $this->assertTrue($numeric->check(3.2));
 
-        $this->assertTrue($numeric->checkType("1"));
+        $this->assertTrue($numeric->check("1"));
 
-        $this->assertTrue($numeric->checkType("5.7"));
+        $this->assertTrue($numeric->check("5.7"));
 
-        $this->assertTrue($numeric->checkType("5."));
+        $this->assertTrue($numeric->check("5."));
 
-        $this->assertFalse($numeric->checkType(array()));
-        $this->assertFalse($numeric->checkType("1.."));
+        $this->assertFalse($numeric->check(array()));
+        $this->assertFalse($numeric->check("1.."));
     }
 
     public function testCorrectRange1() {

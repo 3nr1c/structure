@@ -1,9 +1,12 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: enric
- * Date: 14/7/15
- * Time: 10:17
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author Enric Florit
+ * @since 0.1.0
+ * @date 13/7/15
  */
 
 class StaticsTest extends PHPUnit_Framework_TestCase {

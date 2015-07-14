@@ -1,6 +1,11 @@
 <?php
 /**
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
  * @author Enric Florit
+ * @since 0.1.0
  * @date 13/7/15
  */
 
@@ -20,7 +25,7 @@ class ScalarS extends Structure {
      * @param mixed $data
      * @return bool
      */
-    public function checkType($data = null) {
+    protected function checkType($data = null) {
         if (!is_null($data)) {
             $this->setData($data);
         }
