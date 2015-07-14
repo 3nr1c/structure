@@ -244,9 +244,6 @@ class ArrayS extends Structure {
                         return $structure->format($data);
                     } else if (!isset($valid)) {
                         try {
-                            /*var_export($this->getNull());
-                            var_export($structure->getNull());
-                            print "\n";*/
                             if (count($this->data) == 0) {
                                 var_export($this->getNull());
                             }
