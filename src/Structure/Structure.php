@@ -67,6 +67,14 @@ abstract class Structure {
 
     abstract public function checkType();
 
+    /**
+     * @param mixed $format
+     * @param null $data
+     * @param bool $countStrict
+     * @param bool $null
+     * @return ArrayS
+     * @throws \Exception
+     */
     public static function ArrayS($format, $data = null, $countStrict = true, $null = false) {
         $array = new ArrayS();
         $array->setFormat($format);
