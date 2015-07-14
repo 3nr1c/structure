@@ -258,6 +258,7 @@ class ArrayS extends Structure {
             }
         } else if (is_array($format)) {
             $a = new ArrayS($data, $this->getNull());
+            $a->setCountStrict($this->countStrict);
             $a->setFormat($format);
             $valid = $a->check();
         } else {
