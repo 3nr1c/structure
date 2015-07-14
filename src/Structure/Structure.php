@@ -15,7 +15,7 @@ abstract class Structure {
     /**
      * @param string $type
      * @param mixed $data
-     * @param bool $null
+     * @param boolean $null
      */
     public function __construct($type = "", $data = null, $null = false) {
         $this->setType($type);
@@ -52,26 +52,42 @@ abstract class Structure {
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     public function getNull() {
         return $this->null;
     }
 
     /**
-     * @param bool $null
+     * @param boolean $null
      */
     public function setNull($null) {
         $this->null = $null;
     }
 
-    abstract public function checkType();
+    /**
+     * @param mixed $data
+     * @return boolean
+     */
+    abstract public function checkType($data = null);
+
+    /**
+     * @param mixed $data
+     * @return boolean
+     */
+    abstract public function check($data = null);
+
+    /**
+     * @param mixed $data
+     * @return mixed
+     */
+    abstract public function format($data = null);
 
     /**
      * @param mixed $format
      * @param null $data
-     * @param bool $countStrict
-     * @param bool $null
+     * @param boolean $countStrict
+     * @param boolean $null
      * @return ArrayS
      * @throws \Exception
      */
