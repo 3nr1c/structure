@@ -149,4 +149,11 @@ abstract class Structure {
         $numeric->setNull($null);
         return $numeric;
     }
+
+    public static function StringS($data = null, $null = false) {
+        $string = new StringS();
+        $string->setData($data);
+        $string->setNull($null);
+        return $string;
+    }
 }
