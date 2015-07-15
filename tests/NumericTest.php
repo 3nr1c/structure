@@ -27,13 +27,29 @@ class NumericTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($numeric->check("1.."));
     }
 
-    public function testParser() {
+    public function testParser1() {
         $range = "  [ -13, 4.2)";
         try {
             $numeric = \Structure\Structure::NumericS($range);
         } catch (\Exception $e) {
             $this->fail("Unexpected exception: '" . $e->getMessage() . "'");
         }
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage Unexpected character '{'
+     */
+    public function testParser2() {
+        \Structure\Structure::NumericS("{3, 4.2]");
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage Unexpected space character ' '
+     */
+    public function testParser3() {
+        \Structure\Structure::NumericS("[3. 2, 4.2]");
     }
 
     public function testCorrectRange1() {

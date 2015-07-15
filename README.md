@@ -127,7 +127,7 @@ $scalar->check($var);
 This class runs the ```is_numeric()``` test against a variable. A range property can be defined, with the following syntax:
 
 ```regexp
-/^[\(\[]-?\d+(\.\d+)?,-?\d+(\.\d+)?[\)\]]$/
+/^\s*[\(\[]\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*[\)\]]\s*$/
 ```
 
 That is, it uses the [mathematical notation](https://en.wikipedia.org/wiki/Interval_(mathematics)#Including_or_excluding_endpoints):
