@@ -18,7 +18,7 @@ You can install Structure into your project using [Composer](http://getcomposer.
 }
 ```
 
-You can also use the ```"dev-master"``` version at your own risk. The code in this version can change at any time.
+You can also use the ```"dev-master"``` version at your own risk. The code in this version may change at any time.
 
 # Introduction
 
