@@ -88,6 +88,14 @@ class NumericS extends ScalarS {
                 } else {
                     throw new \Exception("Unexpected character '" . $range[$i] . "'");
                 }
+            } else if ($range[$i] === ' ') {
+                if ((count($rangeInformation) === 2 && strlen($rangeInformation[1]) > 0)
+                    || (count($rangeInformation) === 3 && strlen($rangeInformation[2]) > 0)) {
+                    if ($i + 1 < strlen($range)
+                        && (is_numeric($range[$i + 1]) || $range[$i + 1] === "-" || $range[$i + 1] === '.')) {
+                        throw new \Exception("Unexpected space character ' '");
+                    }
+                }
             } else {
                 throw new \Exception("Unexpected character '" . $range[$i] . "'");
             }

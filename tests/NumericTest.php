@@ -27,6 +27,15 @@ class NumericTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($numeric->check("1.."));
     }
 
+    public function testParser() {
+        $range = "  [ -13, 4.2)";
+        try {
+            $numeric = \Structure\Structure::NumericS($range);
+        } catch (\Exception $e) {
+            $this->fail("Unexpected exception: '" . $e->getMessage() . "'");
+        }
+    }
+
     public function testCorrectRange1() {
         $numeric = new \Structure\NumericS();
 
