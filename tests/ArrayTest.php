@@ -185,6 +185,21 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($array->check(array(1, "a", 13.2)));
     }
 
+    public function testScalarArray() {
+        $test = \Structure\Structure::ArrayS("scalar[]");
+        $array = array(
+            1,
+            "hello",
+            true,
+            2.4
+        );
+
+        $this->assertTrue($test->check($array));
+
+        $array[] = array();
+        $this->assertFalse($test->check($array));
+    }
+
     public function testGeneral1() {
         $arrayCheck = new \Structure\ArrayS();
         $arrayCheck->setFormat(array(
