@@ -27,6 +27,9 @@ class IntegerS extends NumericS {
      * @return int
      */
     public function format($data = null) {
-        return intval($data);
+        $data = parent::format($data);
+
+        if (!is_null($data)) return intval($data);
+        else return null;
     }
 }

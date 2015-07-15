@@ -27,6 +27,9 @@ class FloatS extends NumericS {
      * @return float
      */
     public function format($data = null) {
-        return floatval($data);
+        $data = parent::format($data);
+
+        if (!is_null($data)) return floatval($data);
+        else return null;
     }
 }

@@ -44,4 +44,24 @@ class ArrayFormatTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($formatter->check($newArray));
     }
+
+    public function testFormat3() {
+        $format = array(
+            "full_name" => "string",
+            "height" => "integer",
+            "weight" => "integer",
+            "gender" => "integer[0,2]"
+        );
+        $formatter = \Structure\Structure::ArrayS($format, null, false, true);
+
+        $array = array(
+            "full_name" => "My Name",
+            "height" => 175,
+            "gender" => "-1"
+        );
+
+        $this->assertFalse($formatter->check($array));
+        $newArray = $formatter->format($array);
+        $this->assertTrue($formatter->check($newArray));
+    }
 }

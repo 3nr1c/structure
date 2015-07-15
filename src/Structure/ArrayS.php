@@ -75,7 +75,7 @@ class ArrayS extends Structure {
 
     public function check($data = null) {
         if ($this->getNull()) {
-            return is_null($this->data) || ($this->checkType($data) && $this->checkFormat($data));
+            return (is_null($this->data) || $this->checkType($data)) && $this->checkFormat($data);
         } else {
             return $this->checkType($data) && $this->checkFormat($data);
         }
@@ -141,7 +141,7 @@ class ArrayS extends Structure {
         if ($associativeData && $associativeFormat) {
             foreach ($this->getFormat() as $key=>$value) {
                 if (!array_key_exists($key, $this->data)) {
-                    $valid = false;
+                    $valid = $this->getNull();
                 } else {
                     $valid = $this->checkValue($this->data[$key], $value);
                 }
@@ -185,6 +185,7 @@ class ArrayS extends Structure {
                         break;
                 }
                 /** @var NumericS $structure */
+                $structure->setNull($this->getNull());
                 $structure->setRange(preg_replace("/^(numeric|float|integer)/", "", $format));
                 if ($applyFormat) {
                     return $structure->format($data);
@@ -288,8 +289,12 @@ class ArrayS extends Structure {
 
         if ($associativeData && $associativeFormat) {
             foreach ($this->getFormat() as $key=>$value) {
-                if (!array_key_exists($key, $this->data) && !$this->null) {
-                    throw new \Exception("Non existent key '" . $key . "'");
+                if (!array_key_exists($key, $this->data)) {
+                    if ($this->null) {
+                        $this->data[$key] = null;
+                    } else {
+                        throw new \Exception("Undefined key '" . $key . "'");
+                    }
                 } else {
                     $this->data[$key] = $this->checkValue($this->data[$key], $value, true);
                 }
