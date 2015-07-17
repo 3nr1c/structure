@@ -29,4 +29,15 @@ class StringS extends ScalarS {
     public function format($data = null) {
         return (string)$data;
     }
+
+    protected function toTypeFromString(&$array) {
+        foreach ($array as &$value) {
+            $value = trim($value);
+
+            if (!$this->checkType($value)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

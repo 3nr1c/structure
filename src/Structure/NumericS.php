@@ -130,22 +130,22 @@ class NumericS extends ScalarS {
     protected function checkRange($data = null) {
         if (is_null($this->range)) return true;
 
-        if (!is_null($data)) {
-            $this->setData($data);
+        if (is_null($data)) {
+            $data = $this->getData();
         }
 
         $valid = true;
 
         if ($this->lowerStrict) {
-            $valid = ($valid && $this->lowerBound < $this->getData());
+            $valid = ($valid && $this->lowerBound < $data);
         } else {
-            $valid = ($valid && $this->lowerBound <= $this->getData());
+            $valid = ($valid && $this->lowerBound <= $data);
         }
 
         if ($this->upperStrict) {
-            $valid = ($valid && $this->getData() < $this->upperBound);
+            $valid = ($valid && $data < $this->upperBound);
         } else {
-            $valid = ($valid && $this->getData() <= $this->upperBound);
+            $valid = ($valid && $data <= $this->upperBound);
         }
 
         return $valid;
@@ -157,9 +157,11 @@ class NumericS extends ScalarS {
      */
     public function check($data = null) {
         if ($this->getNull()) {
-            return (is_null($this->data) || $this->checkType($data)) && $this->checkRange($data);
+            return (is_null($this->data) || $this->checkType($data))
+                && $this->checkRange($data)
+                && $this->checkValueSet($data);
         } else {
-            return $this->checkType($data) && $this->checkRange($data);
+            return $this->checkType($data) && $this->checkRange($data) && $this->checkValueSet($data);
         }
     }
 
@@ -184,7 +186,11 @@ class NumericS extends ScalarS {
 
         } else if (!$validType) {
             if (!settype($data, $this->getType())) {
-                $data = (float)$data;
+                if ((float)$data !== (int)$data) {
+                    $data = (float)$data;
+                } else {
+                    $data = (int)$data;
+                }
             }
             $validRange = $this->checkRange($data);
 

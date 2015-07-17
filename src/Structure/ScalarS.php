@@ -13,6 +13,8 @@ namespace Structure;
 
 
 class ScalarS extends Structure {
+    protected $valueSet = array();
+
     /**
      * @param mixed $data
      * @param bool $null
@@ -26,11 +28,11 @@ class ScalarS extends Structure {
      * @return bool
      */
     protected function checkType($data = null) {
-        if (!is_null($data)) {
-            $this->setData($data);
+        if (is_null($data)) {
+            $data = $this->getData();
         }
 
-        if ($this->getNull() && is_null($this->getData())) {
+        if ($this->getNull() && is_null($data)) {
             return true;
         }
 
@@ -38,17 +40,32 @@ class ScalarS extends Structure {
             default:
                 return false;
             case "scalar":
-                return is_scalar($this->getData());
+                return is_scalar($data);
             case "numeric":
-                return is_numeric($this->getData());
+                return is_numeric($data);
             case "string":
-                return is_string($this->getData());
+                return is_string($data);
             case "integer":
-                return is_integer($this->getData());
+                return is_integer($data);
             case "float":
-                return is_float($this->getData());
+                return is_float($data);
             case "boolean":
-                return is_bool($this->getData());
+                return is_bool($data);
+        }
+    }
+
+    protected function checkValueSet($data = null) {
+        if (is_null($data)) {
+            $data = $this->getData();
+        }
+
+        if (count($this->getValueSet()) === 0) {
+            return true;
+        } else {
+            if ($this->getType() === "string" && is_string($data)) {
+                $data = trim($data);
+            }
+            return in_array($data, $this->getValueSet(), true);
         }
     }
 
@@ -57,7 +74,7 @@ class ScalarS extends Structure {
      * @return boolean
      */
     public function check($data = null) {
-        return $this->checkType($data);
+        return $this->checkValueSet($data) && $this->checkType($data);
     }
 
     /**
@@ -68,4 +85,80 @@ class ScalarS extends Structure {
         settype($data, $this->getType());
         return $data;
     }
+
+    public function setValueSet() {
+        $argv = func_get_args();
+
+        if (Structure::ArrayS("string[1]")->check($argv)) {
+            // try to parse a string with structure "{$elem1, $elem2}"
+            $arg = $argv[0];
+
+            if ($arg[0] !== "{") {
+                throw new \Exception("Value set definition must start with '{'");
+            }
+
+            $matchedBracket = false;
+            $valueSet = array("");
+
+            // parse the string argument
+            for ($i = 1; $i < strlen($arg); $i++) {
+                if ($arg[$i] === '}') {
+                    $matchedBracket = true;
+                } else if ($matchedBracket) {
+                    throw new \Exception("Unexpected character ' ' after '}'");
+                } else if ($arg[$i] === ',') {
+                    $valueSet[] = "";
+                } else {
+                    $valueSet[count($valueSet) - 1] .= $arg[$i];
+                }
+            }
+
+            if (!$matchedBracket) throw new \Exception("Expected character '}' at the end of value set string");
+
+
+            if (!$this->toTypeFromString($valueSet)) {
+                return false;
+            } else {
+                $this->valueSet = array_unique($valueSet);
+                return true;
+            }
+
+        } else if (Structure::ArrayS($this->getType() . "[]")->check($argv)) {
+            foreach ($argv as $value) {
+                if (!$this->checkType($value)) return false;
+            }
+            $this->valueSet = array_unique($argv);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getValueSet() {
+        return $this->valueSet;
+    }
+
+    protected function toTypeFromString(&$array) {
+        foreach ($array as &$value) {
+            $value = trim($value);
+
+            if ($value === "true" || $value === "false") {
+                // convert to boolean
+                $value = ($value === "true");
+            } else if (preg_match('/^-?[0-9]+(\.[0-9]*)?$/', $value)) {
+                // convert to float or integer
+                if ((float)$value == (int)$value) $value = (int)$value;
+                else $value = (float)$value;
+            }
+
+            if (!$this->checkType($value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
