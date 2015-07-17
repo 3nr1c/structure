@@ -248,4 +248,5 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 * [ ] Improvement for ranges: infinities
 * [ ] Objects: attributes (name, visibility) and methods (name, visibility, parameters)
 * [ ] Regexp for strings
-* [ ] Enum type: "{1,2,10,3}"
+* [x] Enum type: "{1,2,10,3}"
+* [ ] ArrayS: output what failed after check()
