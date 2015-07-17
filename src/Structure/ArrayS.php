@@ -131,7 +131,6 @@ class ArrayS extends Structure {
         }
 
         if (!$this->getNull() && $this->isCountStrict() && count($this->data) !== count($this->format)){
-            print "\n";
             return false;
         }
 
