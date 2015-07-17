@@ -264,4 +264,51 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($array->check(array()));
     }
+
+    public function testValueSets1() {
+        $format = array(
+            "string{a,b,c}",
+            "integer{2, 4, 6}"
+        );
+
+        $array = \Structure\Structure::ArrayS($format);
+
+        $correct = array("", 2);
+
+        foreach (array("a", "b", "c") as $str) {
+            $correct[0] = $str;
+            foreach (array(2,4,6) as $int) {
+                $correct[1] = $int;
+                $this->assertTrue($array->check($correct));
+            }
+        }
+
+        $incorrect1 = array("d", 2);
+        $this->assertFalse($array->check($incorrect1));
+
+        $incorrect2 = array(false, 2);
+        $this->assertFalse($array->check($incorrect2));
+
+        $incorrect3 = array("a", 3);
+        $this->assertFalse($array->check($incorrect3));
+    }
+
+    public function testValueSets2() {
+        $format = array(
+            "foo" => "scalar{true,1}",
+            "bar" => "float{10,20,30,40,50,60,70,80,90}"
+        );
+        $array = \Structure\Structure::ArrayS($format);
+
+        $correct = array();
+
+        /*foreach (array(true, 1) as $foo) {
+            $correct["foo"] = $foo;
+            foreach (array(10,20,30,40,50,60,70,80,90) as $bar) {
+                $correct["bar"] = $bar;
+                $valid = $array->check($correct);
+                $this->assertTrue($valid);
+            }
+        }*/
+    }
 }

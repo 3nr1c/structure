@@ -48,7 +48,7 @@ class ScalarS extends Structure {
             case "integer":
                 return is_integer($data);
             case "float":
-                return is_float($data);
+                return is_float($data) || is_integer($data);// numbers without floating point crash
             case "boolean":
                 return is_bool($data);
         }
@@ -83,7 +83,12 @@ class ScalarS extends Structure {
      */
     public function format($data = null) {
         settype($data, $this->getType());
-        return $data;
+
+        if (!$this->checkValueSet($data)) {
+            return $this->getValueSet()[0];
+        } else {
+            return $data;
+        }
     }
 
     public function setValueSet() {

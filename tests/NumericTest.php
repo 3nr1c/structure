@@ -161,4 +161,13 @@ class NumericTest extends PHPUnit_Framework_TestCase {
             $this->fail($withoutException . " non-thrown exceptions");
         }
     }
+
+    public function testValueSet() {
+        $float = new Structure\FloatS();
+        $this->assertTrue($float->setValueSet("{10.1,20.1,30.1,40.1,50.1,60.1,70.1,80.1,90.1}"));
+
+        foreach (range(10.1, 90.1, 10) as $i) {
+            $this->assertTrue($float->check($i));
+        }
+    }
 }

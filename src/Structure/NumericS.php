@@ -173,31 +173,37 @@ class NumericS extends ScalarS {
     public function format($data = null) {
         $validType = $this->checkType($data);
         $validRange = $this->checkRange($data);
+        $validValue = $this->checkValueSet($data);
 
-        if ($validType && $validRange) {
+        if ($validType && $validRange && $validValue) {
             return $data;
-        } else if ($validType && !$validRange) {
+        } else if ($validType && (!$validRange || !$validValue)) {
 
             if ($this->getNull()) {
                 return null;
+            } else if (!$validValue) {
+                return $this->getValueSet()[0];
             } else {
                 throw new \Exception("Unable to format " . $this->getType() . " to range" . $this->getRange());
             }
 
         } else if (!$validType) {
             if (!settype($data, $this->getType())) {
-                if ((float)$data !== (int)$data) {
+                if ($this->getType() === "integer" && (float)$data !== (int)$data) {
                     $data = (float)$data;
                 } else {
                     $data = (int)$data;
                 }
             }
             $validRange = $this->checkRange($data);
+            $validValue = $this->checkValueSet($data);
 
-            if ($validRange) {
+            if ($validRange && $validValue) {
                 return $data;
             } else if ($this->getNull()) {
                 return null;
+            } else if (!$validValue) {
+                return $this->getValueSet()[0];
             } else {
                 throw new \Exception("Unable to format " . $this->getType() . " to range" . $this->getRange());
             }

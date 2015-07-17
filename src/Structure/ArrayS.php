@@ -168,6 +168,7 @@ class ArrayS extends Structure {
      */
     protected function checkValue($data, $format, $applyFormat = false) {
         $numeric = '/^(numeric|float|integer|int)(\(|\[)-?\d+(\.\d+)?,-?\d+(\.\d+)?(\)|\])$/';
+        $valueSetScalar = '/^(scalar|string|float|integer|int|str|boolean|bool|numeric)\{[^}]*\}$/';
 
         if (is_null($data)) {
             $valid = $this->getNull();
@@ -187,6 +188,36 @@ class ArrayS extends Structure {
                 /** @var NumericS $structure */
                 $structure->setNull($this->getNull());
                 $structure->setRange(preg_replace("/^(numeric|float|integer)/", "", $format));
+                if ($applyFormat) {
+                    return $structure->format($data);
+                } else {
+                    $valid = $structure->check($data);
+                }
+            } else if (preg_match($valueSetScalar, $format)) {
+                switch ($format[0] . $format[1]) {
+                    default:
+                    case "sc":
+                        $structure = new ScalarS();
+                        break;
+                    case "st":
+                        $structure = new StringS();
+                        break;
+                    case "nu":
+                        $structure = new NumericS();
+                        break;
+                    case "fl":
+                        $structure = new FloatS();
+                        break;
+                    case "in":
+                        $structure = new IntegerS();
+                        break;
+                    case "bo":
+                        $structure = new BooleanS();
+                        break;
+                }
+                /** @var ScalarS $structure */
+                $structure->setNull($this->getNull());
+                $structure->setValueSet(preg_replace('/^[^{]+/', "", $format));
                 if ($applyFormat) {
                     return $structure->format($data);
                 } else {
