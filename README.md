@@ -236,6 +236,44 @@ $array->setFormat(array(
 ```
 As you can see, it has a recursive definition
 
+## Working with Value Sets
+
+Sometimes you want to check if a variable has a value that you know. Let's imagine that we want to check if a number is
+3 or 7. It's not possible using the mathematical notation supported by Structure (we'd need to use unions and intersections
+of mathematical entities). Value Sets in Structure provide this feature.
+
+```php
+$numeric = new \Structure\NumericS();
+$numeric->setValueSet("{3,7}");
+$numeric->check(3); //true
+$numeric->check(7); //true
+$numeric->check(542); //false
+```
+
+This feature is available for all Structure types. When ```ScalarS``` (```StringS```, ```NumericS```, ```IntegerS```,
+```FloatS```, and ```BooleanS``` is inherited a ```setValueSet()``` method is available.
+
+When working with arrays, the Value Set information can be embedded within the format declaration.
+
+```php
+$format = array(
+    "string{a,b,c}",
+    "integer{2, 4, 6}"
+);
+
+$array = \Structure\Structure::ArrayS($format);
+
+$arrayA = array("a", 2);
+$arrayB = array("a", 6);
+$arrayC = array("c", 2);
+$arrayD = array("f", 2);
+
+$array->check($arrayA); //correct
+$array->check($arrayB); //correct
+$array->check($arrayC); //correct
+$array->check($arrayD); //incorrect
+```
+
 # Further info
 
 You can read more documentation by running ```composer doc``` (phpdoc needed) and by looking at the test cases.
