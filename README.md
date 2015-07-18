@@ -251,7 +251,7 @@ $numeric->check(542); //false
 ```
 
 This feature is available for all Structure types. When ```ScalarS``` (```StringS```, ```NumericS```, ```IntegerS```,
-```FloatS```, and ```BooleanS``` is inherited a ```setValueSet()``` method is available.
+```FloatS```, and ```BooleanS```) is inherited a ```setValueSet()``` method is available.
 
 When working with arrays, the Value Set information can be embedded within the format declaration.
 
