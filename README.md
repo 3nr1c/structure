@@ -274,6 +274,22 @@ $array->check($arrayC); //correct
 $array->check($arrayD); //incorrect
 ```
 
+This feature can also be used to check whether a variable matches a single value, which can be quite useful in an array context. For example, you could check bools, or integers:
+
+```php
+$format = array(
+    "logged" => "bool{true}",
+    "status" => "integer{0}"
+);
+$array = \Structure\Structure::ArrayS($format);
+
+$test1 = array("logged" => true, "status" => 0);
+$test2 = array("logged" => true, "status" => 1); //the status indicates some error code here
+
+$array->check($test1);//true
+$array->check($test2);//false
+```
+
 # Further info
 
 You can read more documentation by running ```composer doc``` (phpdoc needed) and by looking at the test cases.
