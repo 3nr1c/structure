@@ -107,12 +107,16 @@ class ScalarS extends Structure {
 
             // parse the string argument
             for ($i = 1; $i < strlen($arg); $i++) {
-                if ($arg[$i] === '}') {
+                if ($arg[$i] === '}' && $arg[$i - 1] !== '\\') {
                     $matchedBracket = true;
                 } else if ($matchedBracket) {
                     throw new \Exception("Unexpected character ' ' after '}'");
-                } else if ($arg[$i] === ',') {
+                } else if ($arg[$i] === ',' && $arg[$i - 1] !== '\\') {
                     $valueSet[] = "";
+                } else if ($arg[$i] === '\\') {
+                    if ($i + 1 < strlen($arg) && $arg[$i + 1] !== ',' && $arg[$i + 1] !== '}') {
+                        $valueSet[count($valueSet) - 1] .= "\\";
+                    }
                 } else {
                     $valueSet[count($valueSet) - 1] .= $arg[$i];
                 }

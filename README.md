@@ -304,3 +304,4 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 * [ ] Regexp for strings
 * [x] Enum type: "{1,2,10,3}"
 * [ ] ArrayS: output what failed after check()
+* [ ] ArrayS: mark some keys as optional

@@ -105,4 +105,12 @@ class ScalarTest extends PHPUnit_Framework_TestCase {
         $numeric = new \Structure\NumericS();
         $this->assertFalse($numeric->setValueSet("{hello,3}"));
     }
+
+    public function testValueSet7() {
+        $scalar = new \Structure\ScalarS();
+        $scalar->setValueSet("{hello\, world!, {scape\}}");
+
+        $this->assertTrue($scalar->check("hello, world!"));
+        $this->assertTrue($scalar->check("{scape}"));
+    }
 }
