@@ -14,7 +14,7 @@ You can install Structure into your project using [Composer](http://getcomposer.
   
 ```json
 "require":{
-    "3nr1c/structure": "0.2.*"
+    "3nr1c/structure": "0.*"
 }
 ```
 
