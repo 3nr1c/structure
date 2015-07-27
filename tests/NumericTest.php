@@ -170,4 +170,33 @@ class NumericTest extends PHPUnit_Framework_TestCase {
             $this->assertTrue($float->check($i));
         }
     }
+
+    public function testInfinities() {
+        $numeric = new Structure\NumericS();
+        $numeric->setRange("(-inf, inf)");
+        for ($i = -pow(10, 10); $i < pow(10,10); $i += pow(10, 9)) {
+            $this->assertTrue($numeric->check($i));
+        }
+
+        $numeric->setRange("(0, +inf)");
+        $this->assertFalse($numeric->check(0));
+        $this->assertTrue($numeric->check(1));
+        $this->assertTrue($numeric->check(147821764713627581));
+    }
+
+    public function testBadInfinities() {
+        try {
+            $numeric = \Structure\Structure::NumericS("(inf, 0)");
+            $this->fail("An exception was excepted");
+        } catch(\Exception $e) {
+            $this->addToAssertionCount(1);
+        }
+
+        try {
+            $numeric = \Structure\Structure::NumericS("(0,-inf)");
+            $this->fail("An exception was excepted");
+        } catch(\Exception $e) {
+            $this->addToAssertionCount(1);
+        }
+    }
 }

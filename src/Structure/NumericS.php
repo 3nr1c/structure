@@ -17,8 +17,10 @@ class NumericS extends ScalarS {
 
     protected $lowerBound;
     protected $lowerStrict;
+    protected $lowerInfinity = false;
     protected $upperBound;
     protected $upperStrict;
+    protected $upperInfinity = true;
 
     /**
      * @param mixed $data
@@ -48,12 +50,12 @@ class NumericS extends ScalarS {
                 } else {
                     throw new \Exception("Unexpected character '" . $range[$i] . "'");
                 }
-            } else if ($range[$i] === '-') {
+            } else if ($range[$i] === '-' || $range[$i] === '+') {
                 if (count($rangeInformation) === 2 || count($rangeInformation) === 3) {
                     if (strlen(end($rangeInformation)) === 0) {
-                        $rangeInformation[count($rangeInformation) - 1] .= '-';
+                        $rangeInformation[count($rangeInformation) - 1] .= $range[$i];
                     } else {
-                        throw new \Exception("Unexpected character '-'");
+                        throw new \Exception("Unexpected character " . $range[$i] . "'");
                     }
                 } else {
                     throw new \Exception("Unexpected character '-'");
@@ -96,6 +98,16 @@ class NumericS extends ScalarS {
                         throw new \Exception("Unexpected space character ' '");
                     }
                 }
+            } else if ($range[$i] === 'i' && $range[$i+1] === 'n' && $range[$i+2] === 'f') {
+                if (count($rangeInformation) === 2 && $rangeInformation[1] === '-') {
+                    $rangeInformation[1] = "-inf";
+                } else if (count($rangeInformation) === 3
+                    && ($rangeInformation[2] === '+' || $rangeInformation[2] === '')) {
+                    $rangeInformation[2] = "+inf";
+                } else {
+                    throw new \Exception("Unexpected expression 'inf'");
+                }
+                $i += 2;
             } else {
                 throw new \Exception("Unexpected character '" . $range[$i] . "'");
             }
@@ -111,8 +123,10 @@ class NumericS extends ScalarS {
 
         $this->lowerStrict = $rangeInformation[0];
         $this->lowerBound = (float)$rangeInformation[1];
+        $this->lowerInfinity = ($rangeInformation[1] === "-inf");
         $this->upperBound = (float)$rangeInformation[2];
         $this->upperStrict = $rangeInformation[3];
+        $this->upperInfinity = ($rangeInformation[2] === "+inf");
     }
 
     /**
@@ -137,15 +151,15 @@ class NumericS extends ScalarS {
         $valid = true;
 
         if ($this->lowerStrict) {
-            $valid = ($valid && $this->lowerBound < $data);
+            $valid = ($valid && ($this->lowerInfinity || $this->lowerBound < $data));
         } else {
-            $valid = ($valid && $this->lowerBound <= $data);
+            $valid = ($valid && ($this->lowerInfinity || $this->lowerBound <= $data));
         }
 
         if ($this->upperStrict) {
-            $valid = ($valid && $data < $this->upperBound);
+            $valid = ($valid && ($this->upperInfinity || $data < $this->upperBound));
         } else {
-            $valid = ($valid && $data <= $this->upperBound);
+            $valid = ($valid && ($this->upperInfinity || $data <= $this->upperBound));
         }
 
         return $valid;

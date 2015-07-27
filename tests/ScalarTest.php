@@ -61,7 +61,7 @@ class ScalarTest extends PHPUnit_Framework_TestCase {
             $this->fail("Unexpected \\Exception: '" . $e->getMessage() . "'");
         }
         $scalar->setValueSet("{,}");
-        $this->assertEquals(array(""), $scalar->getValueSet());
+        $this->assertEquals(array("", ""), $scalar->getValueSet());
     }
 
     /**
