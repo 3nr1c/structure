@@ -302,13 +302,13 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
 
         $correct = array();
 
-        /*foreach (array(true, 1) as $foo) {
+        foreach (array(true, 1) as $foo) {
             $correct["foo"] = $foo;
             foreach (array(10,20,30,40,50,60,70,80,90) as $bar) {
                 $correct["bar"] = $bar;
                 $valid = $array->check($correct);
                 $this->assertTrue($valid);
             }
-        }*/
+        }
     }
 }

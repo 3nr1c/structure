@@ -119,7 +119,7 @@ class ArrayS extends Structure {
         if (!is_null($data)) $this->data = $data;
 
         if ($this->format === "array") {
-            return is_array($this->data);
+            return true;// no need to run again is_array
         }
 
         if (is_string($this->format)) {

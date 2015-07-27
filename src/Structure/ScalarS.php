@@ -128,7 +128,7 @@ class ScalarS extends Structure {
             if (!$this->toTypeFromString($valueSet)) {
                 return false;
             } else {
-                $this->valueSet = array_unique($valueSet);
+                $this->valueSet = $valueSet;
                 return true;
             }
 
@@ -136,7 +136,7 @@ class ScalarS extends Structure {
             foreach ($argv as $value) {
                 if (!$this->checkType($value)) return false;
             }
-            $this->valueSet = array_unique($argv);
+            $this->valueSet = $argv;
             return true;
         } else {
             return false;
