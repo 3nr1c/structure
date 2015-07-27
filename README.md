@@ -127,7 +127,7 @@ $scalar->check($var);
 This class runs the ```is_numeric()``` test against a variable. A range property can be defined, with the following syntax:
 
 ```regexp
-/^\s*[\(\[]\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*[\)\]]\s*$/
+/^\s*[\(\[]\s*(-?\d+(\.\d+)?|-inf)\s*,\s*(-?\d+(\.\d+)?|\+?inf)\s*[\)\]]\s*$/
 ```
 
 That is, it uses the [mathematical notation](https://en.wikipedia.org/wiki/Interval_(mathematics)#Including_or_excluding_endpoints):
@@ -136,6 +136,9 @@ That is, it uses the [mathematical notation](https://en.wikipedia.org/wiki/Inter
 * The '[' character indicates a non-strict (<=) lower bound
 * The ')' character indicates a strict (>) upper bound
 * The ']' character indicates a non-strict (>=) upper bound
+
+The term ```inf``` is used to indicate infinities. It has limitations: the left value can only be ```-inf```, and the right
+value either ```inf``` or ```+inf```. 
 
 The parser will raise an ```\Exception``` if the syntax is not correct. Here are a couple of examples:
  
@@ -297,12 +300,12 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 # Planned features
 
 * [x] Quick static functions for type testing (ArrayS::check())
+* [x] Improvement for ranges: infinities
+* [x] Enum type: "{1,2,10,3}"
 * [ ] Date formats: timestamp, mysql date/time/datetime, standard times
 * [ ] Email, ip, hash formats
-* [ ] Improvement for ranges: infinities
 * [ ] Objects: attributes (name, visibility) and methods (name, visibility, parameters)
 * [ ] Regexp for strings
-* [x] Enum type: "{1,2,10,3}"
 * [ ] ArrayS: output what failed after check()
 * [ ] ArrayS: mark some keys as optional
 * [ ] ArrayS: "null[]"
