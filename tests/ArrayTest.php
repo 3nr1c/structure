@@ -311,4 +311,14 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
             }
         }
     }
+
+    public function testInfinities() {
+        $format = array(
+            "foo" => "numeric(0, +inf)"
+        );
+        $array = \Structure\Structure::ArrayS($format);
+        $this->assertTrue($array->check(array("foo" => "3")));
+        $this->assertFalse($array->check(array("foo" => "-1")));
+        $this->assertFalse($array->check(array("foo" => "0")));
+    }
 }

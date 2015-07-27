@@ -166,7 +166,7 @@ class ArrayS extends Structure {
      * @throws \Exception
      */
     protected function checkValue($data, $format, $applyFormat = false) {
-        $numeric = '/^(numeric|float|integer|int)(\(|\[)-?\d+(\.\d+)?,-?\d+(\.\d+)?(\)|\])$/';
+        $numeric = '/^(numeric|float|integer|int)(\(|\[).+,.+(\)|\])$/';
         $valueSetScalar = '/^(scalar|string|float|integer|int|str|boolean|bool|numeric)\{[^}]*\}$/';
 
         if (is_null($data)) {
