@@ -20,7 +20,7 @@ class NumericS extends ScalarS {
     protected $lowerInfinity = false;
     protected $upperBound;
     protected $upperStrict;
-    protected $upperInfinity = true;
+    protected $upperInfinity = false;
 
     /**
      * @param mixed $data
