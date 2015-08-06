@@ -3,6 +3,21 @@
 
 **Structure** provides a set of classes to check the data type and format of your variables.
 
+## Table of Contents
+**[License](#license)**
+**[Installation](#installation)**
+**[Introduction](#introduction)**
+**[Documentation](#documentation)**
+**[Static shortcuts](#static-shortcuts)**
+**[Class ScalarS](#class-scalars)**
+**[Class NumericS](#class-numerics)**
+**[Classes IntegerS and FloatS](#classes-integers-and-floats)**
+**[Class StringS](#class-strings)**
+**[Class ArrayS](#class-arrays)**
+**[Working with Value Sets](#working-with-value-sets)**
+**[Further info](#further-info)**
+**[Planned features](#planned-features)**
+
 ## License
 
 **Structure** is provided under the [MIT License](https://raw.githubusercontent.com/3nr1c/structure/master/LICENSE).
