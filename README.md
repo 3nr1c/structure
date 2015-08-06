@@ -4,19 +4,19 @@
 **Structure** provides a set of classes to check the data type and format of your variables.
 
 ## Table of Contents
-**[License](#license)**
-**[Installation](#installation)**
-**[Introduction](#introduction)**
-**[Documentation](#documentation)**
-**[Static shortcuts](#static-shortcuts)**
-**[Class ScalarS](#class-scalars)**
-**[Class NumericS](#class-numerics)**
-**[Classes IntegerS and FloatS](#classes-integers-and-floats)**
-**[Class StringS](#class-strings)**
-**[Class ArrayS](#class-arrays)**
-**[Working with Value Sets](#working-with-value-sets)**
-**[Further info](#further-info)**
-**[Planned features](#planned-features)**
+**[License](#license)**<br/>
+**[Installation](#installation)**<br/>
+**[Introduction](#introduction)**<br/>
+**[Documentation](#documentation)**<br/>
+**[Static shortcuts](#static-shortcuts)**<br/>
+**[Class ScalarS](#class-scalars)**<br/>
+**[Class NumericS](#class-numerics)**<br/>
+**[Classes IntegerS and FloatS](#classes-integers-and-floats)**<br/>
+**[Class StringS](#class-strings)**<br/>
+**[Class ArrayS](#class-arrays)**<br/>
+**[Working with Value Sets](#working-with-value-sets)**<br/>
+**[Further info](#further-info)**<br/>
+**[Planned features](#planned-features)**<br/>
 
 ## License
 
