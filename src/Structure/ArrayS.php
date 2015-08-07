@@ -74,8 +74,10 @@ class ArrayS extends Structure {
     }
 
     public function check($data = null) {
+        if (is_null($data)) $data = $this->data;
+
         if ($this->getNull()) {
-            return (is_null($this->data) || $this->checkType($data)) && $this->checkFormat($data);
+            return (is_null($data) || $this->checkType($data)) && $this->checkFormat($data);
         } else {
             return $this->checkType($data) && $this->checkFormat($data);
         }
@@ -104,9 +106,9 @@ class ArrayS extends Structure {
      * @return bool
      */
     protected function checkType($data = null) {
-        if (!is_null($data)) $this->data = $data;
+        if (is_null($data)) $data = $this->data;
 
-        return is_array($this->data);
+        return is_array($data);
     }
 
     /**
@@ -116,40 +118,40 @@ class ArrayS extends Structure {
      * @throws \Exception
      */
     protected function checkFormat($data = null) {
-        if (!is_null($data)) $this->data = $data;
+        if (is_null($data)) $data = $this->data;
 
         if ($this->format === "array") {
             return true;// no need to run again is_array
         }
 
         if (is_string($this->format)) {
-            foreach ($this->data as $value) {
+            foreach ($data as $value) {
                 $valid = $this->checkValue($value, $this->format);
                 if (!$valid) return false;
             }
             return true;
         }
 
-        if (!$this->getNull() && $this->isCountStrict() && count($this->data) !== count($this->format)){
+        if (!$this->getNull() && $this->isCountStrict() && count($data) !== count($this->format)){
             return false;
         }
 
-        $associativeData = ArrayS::isAssociative($this->data);
+        $associativeData = ArrayS::isAssociative($data);
         $associativeFormat = ArrayS::isAssociative($this->format);
 
         if ($associativeData && $associativeFormat) {
             foreach ($this->getFormat() as $key=>$value) {
-                if (!array_key_exists($key, $this->data)) {
+                if (!array_key_exists($key, $data)) {
                     $valid = $this->getNull();
                 } else {
-                    $valid = $this->checkValue($this->data[$key], $value);
+                    $valid = $this->checkValue($data[$key], $value);
                 }
                 if (!$valid) return false;
             }
             return true;
         } else if (!$associativeData && !$associativeFormat) {
-            for ($i = 0; $i < count($this->data); $i++) {
-                $valid = $this->checkValue($this->data[$i], $this->format[$i]);
+            for ($i = 0; $i < count($data); $i++) {
+                $valid = $this->checkValue($data[$i], $this->format[$i]);
                 if (!$valid) return false;
             }
             return true;
