@@ -13,6 +13,8 @@ namespace Structure;
 
 
 class IntegerS extends NumericS {
+    protected $numeric = false;
+
     /**
      * @param mixed $data
      * @param bool $null
@@ -31,5 +33,41 @@ class IntegerS extends NumericS {
 
         if (!is_null($data)) return intval($data);
         else return null;
+    }
+
+    /**
+     * @param bool $numeric
+     */
+    public function setNumeric($numeric) {
+        $this->numeric = $numeric;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getNumeric() {
+        return $this->numeric;
+    }
+
+    /**
+     * @param null $data
+     * @return bool
+     */
+    public function checkType($data = null) {
+        if (!$this->getNumeric()) {
+            return parent::checkType($data);
+        } else {
+            if (is_null($data)) {
+                $data = $this->getData();
+            }
+
+            if ($this->getNull() && is_null($data)) {
+                return true;
+            }
+
+            $valid = is_numeric($data);
+            $valid = $valid && (float)$data == (int)$data;
+            return $valid;
+        }
     }
 }

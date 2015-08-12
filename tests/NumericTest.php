@@ -25,6 +25,7 @@ class NumericTest extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse($numeric->check(array()));
         $this->assertFalse($numeric->check("1.."));
+        $this->assertFalse($numeric->check("hello"));
     }
 
     public function testParser1() {
@@ -198,5 +199,37 @@ class NumericTest extends PHPUnit_Framework_TestCase {
         } catch(\Exception $e) {
             $this->addToAssertionCount(1);
         }
+    }
+
+    public function testIntegerSNumeric() {
+        $integer = new \Structure\IntegerS();
+
+        $this->assertTrue($integer->check(1));
+        $this->assertFalse($integer->check("1"));
+        $this->assertFalse($integer->check(1.2));
+        $this->assertFalse($integer->check("1.2"));
+
+        $integer->setNumeric(true);
+
+        $this->assertTrue($integer->check(1));
+        $this->assertTrue($integer->check("1"));
+        $this->assertFalse($integer->check(1.2));
+        $this->assertFalse($integer->check("1.2"));
+    }
+
+    public function testFloatSNumeric() {
+        $float = new \Structure\FloatS();
+
+        $this->assertTrue($float->check(1));
+        $this->assertFalse($float->check("1"));
+        $this->assertTrue($float->check(1.2));
+        $this->assertFalse($float->check("1.2"));
+
+        $float->setNumeric(true);
+
+        $this->assertTrue($float->check(1));
+        $this->assertTrue($float->check("1"));
+        $this->assertTrue($float->check(1.2));
+        $this->assertTrue($float->check("1.2"));
     }
 }
