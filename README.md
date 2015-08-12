@@ -188,6 +188,20 @@ $integer = new \Structure\IntegerS();
 $integer->check("5");// false
 ```
 
+As you can see in the examples above, ```FloatS``` and ```IntegerS``` are strict regarding ```string```s of numbers.
+You can use the attribute ```$numeric``` (set to ```false``` by default) to avoid this strictness:
+
+```php
+$float = new \Structure\FloatS();
+$integer = new \Structure\IntegerS();
+
+$float->setNumeric(true);
+$integer->setNumeric(true);
+
+$float->check("3.2");// true
+$integer->check("5");// true
+```
+
 ## Class StringS
 
 This class runs the ```is_string()``` test against a variable.
