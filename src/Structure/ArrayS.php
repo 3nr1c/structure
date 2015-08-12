@@ -277,9 +277,6 @@ class ArrayS extends Structure {
                         return $structure->format($data);
                     } else if (!isset($valid)) {
                         try {
-                            if (count($this->data) == 0) {
-                                var_export($this->getNull());
-                            }
                             $valid = $structure->check($data);
                         } catch (\Exception $e) {
                             $valid = false;
