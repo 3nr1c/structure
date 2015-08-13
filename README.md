@@ -236,6 +236,14 @@ $array->setFormat("bool[]");
 $array->setFormat("MyClass[3]");
 ```
 
+The characters ```+``` and ```*``` can also be used to test simple arrays. The following expressions are valid:
+
+```php
+$array->setFormat("string[*]"); // checks for 0 or more strings
+$array->setFormat("integer[+]"); // checks for 1 or more integers
+$array->setFormat("scalar[5+]"); // checks for 5 or more scalars
+```
+
 The array type is used to represent more complex array structures. If you expect an array to be sequential (i.e., not
 key-value), the format should be an array of types. Again, if all array elements have to be of the same type, the syntax
 above is recommended.
