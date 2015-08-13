@@ -329,4 +329,28 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($array->check(array("foo" => "-1")));
         $this->assertFalse($array->check(array("foo" => "0")));
     }
+
+    public function testMinimumNumber() {
+        $array = \Structure\Structure::ArrayS("str[+]");
+
+        $this->assertFalse($array->check(array()));
+        $this->assertTrue($array->check(array("hello world!")));
+        $this->assertFalse($array->check(array("hello", 3)));
+
+        $array->setFormat("int[3+]");
+
+        $this->assertFalse($array->check(array()));
+        $this->assertFalse($array->check(array(1)));
+        $this->assertFalse($array->check(array(1, 2)));
+        $this->assertTrue($array->check(array(1, 2, 3)));
+        $this->assertTrue($array->check(array(1, 2, 3, 4)));
+        $this->assertFalse($array->check(array(1, 2, 3, true)));
+
+        $array->setFormat("scalar[*]");
+
+        $this->assertTrue($array->check(array()));
+        $this->assertTrue($array->check(array(true)));
+        $this->assertTrue($array->check(array(true, 1)));
+        $this->assertTrue($array->check(array(true, 1, "string")));
+    }
 }

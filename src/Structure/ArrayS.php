@@ -16,6 +16,8 @@ class ArrayS extends Structure {
     protected $format;
     protected $countStrict = true;
 
+    protected $minimumItemNumber = 0;
+
     public function __construct($data = null, $null = false) {
         parent::__construct("array", $data, $null);
     }
@@ -36,16 +38,34 @@ class ArrayS extends Structure {
             // /^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]$/ -> class name, provided by php
             $class = '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*';
 
-            $types = '/^(' .$class. '|\*)?\[\]$/';
-            $typesN = '/^(' .$class. '|\*)?\[(\d+)\]$/';
+            $types = '/^('  . $class . '|\*)?\[\]$/';
+            $typesNumber = '/^('  . $class . '|\*)?\[(\d+)\]$/';
+            $typesSymbol = '/^(' . $class . '|\*)?\[((\d+)?\+|\*)\]$/';
             if (preg_match($types, $format)) {
                 $this->format = str_replace("[]", "", $format);
-            } else if (preg_match($typesN, $format)) {
+            } else if (preg_match($typesNumber, $format)) {
                 $split = explode("[", $format);
                 $type = $split[0];
                 $n = str_replace("]", "", $split[1]);
 
                 $this->format = array_fill(0, $n, $type);
+            } else if (preg_match($typesSymbol, $format)) {
+                $split = explode("[", $format);
+                // set $format to the type
+                $this->format = $split[0];
+
+                $itemNumber = substr($split[1], 0, strlen($split[1]) - 1);
+                switch ($itemNumber[0]) {
+                    case '+':
+                        $this->minimumItemNumber = 1;
+                        break;
+                    case '*':
+                        $this->minimumItemNumber = 0;
+                        break;
+                    default: // a number
+                        $this->minimumItemNumber = intval($itemNumber);
+                        break;
+                }
             }
 
             if ($this->format === "") $this->format = "*";
@@ -76,7 +96,7 @@ class ArrayS extends Structure {
     /**
      * Runs an __is_array__ test on some $data.
      * A test format can be set (read Documentation)
-     * 
+     *
      * @param mixed $data
      * @return bool
      */
@@ -137,7 +157,7 @@ class ArrayS extends Structure {
                 $valid = $this->checkValue($value, $this->format);
                 if (!$valid) return false;
             }
-            return true;
+            return $this->getNull() ? true : count($data) >= $this->minimumItemNumber;
         }
 
         if (!$this->getNull() && $this->isCountStrict() && count($data) !== count($this->format)){
