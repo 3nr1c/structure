@@ -276,10 +276,14 @@ of mathematical entities). Value Sets in Structure provide this feature.
 
 ```php
 $numeric = new \Structure\NumericS();
-$numeric->setValueSet("{3,7}");
+$numeric->setValueSet(3, 7);
+
 $numeric->check(3); //true
 $numeric->check(7); //true
 $numeric->check(542); //false
+
+// Less efficient, but valid (and needed for ArrayS):
+//  $numeric->setValueSet("{3,7}");
 ```
 
 This feature is available for all Structure types. When ```ScalarS``` (```StringS```, ```NumericS```, ```IntegerS```,
