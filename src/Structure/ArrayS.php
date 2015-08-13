@@ -73,8 +73,16 @@ class ArrayS extends Structure {
         $this->countStrict = $countStrict;
     }
 
+    /**
+     * Runs an __is_array__ test on some $data.
+     * A test format can be set (read Documentation)
+     * 
+     * @param mixed $data
+     * @return bool
+     */
     public function check($data = null) {
         if (is_null($data)) $data = $this->data;
+        if (!isset($this->format)) $this->format = "array";
 
         if ($this->getNull()) {
             return (is_null($data) || $this->checkType($data)) && $this->checkFormat($data);

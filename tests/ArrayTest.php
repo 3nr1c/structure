@@ -10,6 +10,14 @@
  */
 
 class ArrayTest extends PHPUnit_Framework_TestCase {
+    public function testArrayType() {
+        $arr = new \Structure\ArrayS();
+        $this->assertTrue($arr->check(array()));
+        $this->assertFalse($arr->check("hello"));
+        $this->assertFalse($arr->check(123));
+        $this->assertFalse($arr->check(1.23));
+        $this->assertFalse($arr->check(false));
+    }
     public function testArraySeq1() {
         $format = array("int", "float", "string");
         $array = new \Structure\ArrayS();
