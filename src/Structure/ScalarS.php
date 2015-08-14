@@ -15,6 +15,8 @@ namespace Structure;
 class ScalarS extends Structure {
     protected $valueSet = array();
 
+    protected static $compiledValueSets = array();
+
     /**
      * @param mixed $data
      * @param bool $null
@@ -92,11 +94,17 @@ class ScalarS extends Structure {
     }
 
     public function setValueSet() {
+        $argc = func_num_args();
         $argv = func_get_args();
 
-        if (Structure::ArrayS("string[1]")->check($argv)) {
+        if ($argc === 1 && is_string($argv[0])) {
             // try to parse a string with structure "{$elem1, $elem2}"
             $arg = $argv[0];
+
+            if (isset(ScalarS::$compiledValueSets[$arg])) {
+                $valueSet = ScalarS::$compiledValueSets[$arg];
+                goto set_info;
+            }
 
             if ($arg[0] !== "{") {
                 throw new \Exception("Value set definition must start with '{'");
@@ -124,7 +132,8 @@ class ScalarS extends Structure {
 
             if (!$matchedBracket) throw new \Exception("Expected character '}' at the end of value set string");
 
-
+            NumericS::$compiledValueSets[$arg] = $valueSet;
+set_info:
             if (!$this->toTypeFromString($valueSet)) {
                 return false;
             } else {

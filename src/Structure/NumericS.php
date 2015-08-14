@@ -22,6 +22,8 @@ class NumericS extends ScalarS {
     protected $upperStrict;
     protected $upperInfinity = false;
 
+    protected static $compiledRanges = array();
+
     /**
      * @param mixed $data
      * @param bool $null
@@ -36,6 +38,15 @@ class NumericS extends ScalarS {
      * @throws \Exception
      */
     public function setRange($range) {
+        if (isset(NumericS::$compiledRanges[$range])) {
+            //$this->setRangeInformation(NumericS::$compiledRanges[$range]);
+            //return;
+
+            // goto has been found to be more efficient
+            $rangeInformation = NumericS::$compiledRanges[$range];
+            goto set_info;
+        }
+
         if (!is_string($range)) {
             throw new \Exception("Variable \$range must be a string");
         }
@@ -113,13 +124,15 @@ class NumericS extends ScalarS {
             }
         }
 
-        $this->range = $range;
-
         if (count($rangeInformation) !== 4) {
             throw new \Exception("Incorrect range string format");
         } else if ((float)$rangeInformation[2] < (float)$rangeInformation[1]) {
             throw new \Exception("Upper bound must be >= (greater than or equal to) lower bound");
         }
+
+        NumericS::$compiledRanges[$range] = $rangeInformation;
+set_info:
+        $this->range = $range;
 
         $this->lowerStrict = $rangeInformation[0];
         $this->lowerBound = (float)$rangeInformation[1];
