@@ -26,6 +26,10 @@ class NumericTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($numeric->check(array()));
         $this->assertFalse($numeric->check("1.."));
         $this->assertFalse($numeric->check("hello"));
+
+        $this->assertFalse($numeric->check(null));
+        $numeric->setNull(true);
+        $this->assertTrue($numeric->check(null));
     }
 
     public function testParser1() {
