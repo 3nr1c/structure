@@ -353,4 +353,96 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($array->check(array(true, 1)));
         $this->assertTrue($array->check(array(true, 1, "string")));
     }
+
+    public function testRangeNumericArray() {
+        $array = \Structure\Structure::ArrayS("integer[-5, 5][]");
+
+        $test1 = array(-5, 0, -3, 4, 5);
+        $test2 = array();
+
+        $test3 = array(-6, 0, -3, 4, 5);
+        $test4 = array(10);
+        $test5 = array(0, 1, 2, 2.5);
+        $test6 = array(0, "hello world");
+        $test7 = array(0, "0");
+
+        $this->assertTrue($array->check($test1));
+        $this->assertTrue($array->check($test2));
+
+        $this->assertFalse($array->check($test3));
+        $this->assertFalse($array->check($test4));
+        $this->assertFalse($array->check($test5));
+        $this->assertFalse($array->check($test6));
+        $this->assertFalse($array->check($test7));
+
+
+        $array->setFormat("numeric[-5, 5][+]");
+
+        $this->assertTrue($array->check($test1));
+        $this->assertTrue($array->check($test5));
+        $this->assertTrue($array->check($test7));
+
+        $this->assertFalse($array->check($test2));
+        $this->assertFalse($array->check($test3));
+        $this->assertFalse($array->check($test4));
+        $this->assertFalse($array->check($test6));
+    }
+
+    public function testValueSetArray() {
+        $array = \Structure\Structure::ArrayS("string{waiting, ready, cancelled, delivered}[4]");
+
+        $test1 = array("waiting", "ready", "cancelled", "delivered");
+        
+        $this->assertTrue($array->check($test1));
+    }
+
+    public function testMultipleTypes1() {
+        $format = array(
+            "integer|float",
+            "string|bool"
+        );
+
+        $array = \Structure\Structure::ArrayS($format);
+
+        $this->assertTrue($array->check(array(5, true)));
+        $this->assertTrue($array->check(array(5, "hw")));
+        $this->assertTrue($array->check(array(1.5, true)));
+        $this->assertTrue($array->check(array(1.5, "hw")));
+
+        $this->assertFalse($array->check(array("", false)));
+        $this->assertFalse($array->check(array(1, 1)));
+    }
+
+    public function testMultipleTypes2() {
+        $array = \Structure\Structure::ArrayS("(string|integer)[]");
+
+        $this->assertTrue($array->check(array(1, 2, 3, 4)));
+        $this->assertTrue($array->check(array('a', 'b', 'c')));
+        $this->assertTrue($array->check(array(1, 'b', 'c', 2, 'a', 4)));
+
+        $this->assertTrue($array->check(array()));
+
+        $this->assertFalse($array->check(array(1.5)));
+    }
+
+    public function testMultipleTypes3() {
+        $format = array(
+            "id" => "integer|null",
+            "value" => "string"
+        );
+
+        $array = \Structure\Structure::ArrayS($format);
+
+        $this->assertTrue($array->check(array(
+            "id" => 1,
+            "value" => "test"
+        )));
+
+        $this->assertTrue($array->check(array(
+            "value" => "hw"
+        )));
+
+        // fails because the "value" key mustn't be null
+        $this->assertFalse($array->check(array()));
+    }
 }
