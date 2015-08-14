@@ -249,7 +249,7 @@ class ArrayS extends Structure {
          *  integer(0, inf)
          *  float[0,1]
          */
-        $numeric = '/^(numeric|float|integer|int)(\(|\[).+,.+(\)|\])$/';
+        $numeric = '/^(numeric|float|integer|int)(\(|\[).+,[^\]]+(\)|\])$/';
         /**
          * Examples:
          *  string{pendent, payed, ready, cancelled}

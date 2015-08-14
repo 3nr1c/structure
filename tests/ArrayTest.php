@@ -392,7 +392,7 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $array = \Structure\Structure::ArrayS("string{waiting, ready, cancelled, delivered}[4]");
 
         $test1 = array("waiting", "ready", "cancelled", "delivered");
-        
+
         $this->assertTrue($array->check($test1));
     }
 
@@ -444,5 +444,25 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
 
         // fails because the "value" key mustn't be null
         $this->assertFalse($array->check(array()));
+    }
+
+    public function testMultiDimensional() {
+        $format = "integer[0,inf][3][3]"; // 3x3 matrix
+        $array = \Structure\Structure::ArrayS($format);
+
+        $validMatrix = array(
+            array(1, 2, 3),
+            array(4, 5, 6),
+            array(7, 8, 9)
+        );
+
+        $invalidMatrix1 = array(
+            array(1, 2, 3),
+            array(4, -5, 6),
+            array(7, 8, 9)
+        );
+
+        $this->assertTrue($array->check($validMatrix));
+        $this->assertFalse($array->check($invalidMatrix1));
     }
 }
