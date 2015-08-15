@@ -11,7 +11,10 @@
 
 namespace Structure;
 
-
+/**
+ * Class FloatS
+ * @package Structure
+ */
 class FloatS extends NumericS {
     protected $numeric = false;
 

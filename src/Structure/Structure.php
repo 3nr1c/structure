@@ -11,7 +11,10 @@
 
 namespace Structure;
 
-
+/**
+ * Abstract Class Structure
+ * @package Structure
+ */
 abstract class Structure {
     protected $data;
     protected $type;
@@ -150,6 +153,11 @@ abstract class Structure {
         return $numeric;
     }
 
+    /**
+     * @param mixed $data
+     * @param bool|false $null
+     * @return StringS
+     */
     public static function StringS($data = null, $null = false) {
         $string = new StringS();
         $string->setData($data);

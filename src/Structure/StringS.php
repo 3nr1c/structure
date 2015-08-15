@@ -11,7 +11,10 @@
 
 namespace Structure;
 
-
+/**
+ * Class StringS
+ * @package Structure
+ */
 class StringS extends ScalarS {
     /**
      * @param mixed $data

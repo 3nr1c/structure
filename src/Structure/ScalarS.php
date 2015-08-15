@@ -11,10 +11,21 @@
 
 namespace Structure;
 
-
+/**
+ * Class ScalarS
+ * @package Structure
+ */
 class ScalarS extends Structure {
+    /**
+     * @var array
+     */
     protected $valueSet = array();
 
+    /**
+     * Saves the information extracted from value set strings
+     * to avoid re-parsing them in the future
+     * @var array
+     */
     protected static $compiledValueSets = array();
 
     /**
@@ -56,6 +67,10 @@ class ScalarS extends Structure {
         }
     }
 
+    /**
+     * @param mixed $data
+     * @return bool
+     */
     protected function checkValueSet($data = null) {
         if (is_null($data)) {
             $data = $this->getData();
@@ -72,14 +87,19 @@ class ScalarS extends Structure {
     }
 
     /**
+     * Runs type and value set tests
+     *
+     * @api
+     *
      * @param mixed $data
      * @return boolean
      */
     public function check($data = null) {
-        return $this->checkValueSet($data) && $this->checkType($data);
+        return $this->checkType($data) && $this->checkValueSet($data);
     }
 
     /**
+     * @api
      * @param mixed $data
      * @return mixed
      */
@@ -93,6 +113,15 @@ class ScalarS extends Structure {
         }
     }
 
+    /**
+     * @api
+     * @return bool
+     * @throws \Exception
+     *
+     * @internal param string $valueSet
+     *
+     * @internal param mixed $value1,...
+     */
     public function setValueSet() {
         $argc = func_num_args();
         $argv = func_get_args();

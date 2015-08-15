@@ -11,8 +11,14 @@
 
 namespace Structure;
 
-
+/**
+ * Class IntegerS
+ * @package Structure
+ */
 class IntegerS extends NumericS {
+    /**
+     * @var bool
+     */
     protected $numeric = false;
 
     /**

@@ -11,7 +11,10 @@
 
 namespace Structure;
 
-
+/**
+ * Class BooleanS
+ * @package Structure
+ */
 class BooleanS extends ScalarS {
     /**
      * @param mixed $data

@@ -11,7 +11,10 @@
 
 namespace Structure;
 
-
+/**
+ * Class ArrayS
+ * @package Structure
+ */
 class ArrayS extends Structure {
     protected $format;
     protected $countStrict = true;
