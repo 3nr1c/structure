@@ -117,10 +117,6 @@ class ScalarS extends Structure {
      * @api
      * @return bool
      * @throws \Exception
-     *
-     * @internal param string $valueSet
-     *
-     * @internal param mixed $value1,...
      */
     public function setValueSet() {
         $argc = func_num_args();

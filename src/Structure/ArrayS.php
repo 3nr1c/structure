@@ -23,6 +23,8 @@ class ArrayS extends Structure {
 
     protected $containsNullItems = null;
 
+    protected static $compiledFormats = array();
+
     public function __construct($data = null, $null = false) {
         parent::__construct("array", $data, $null);
     }
@@ -52,7 +54,9 @@ class ArrayS extends Structure {
                 $this->format = $format;
             }
 
-            if ($this->format === "") $this->format = "*";
+            if ($this->format === "" || $this->format === "*") {
+                $this->format = "array";
+            }
         }
     }
 
@@ -222,10 +226,10 @@ class ArrayS extends Structure {
      * @throws \Exception
      */
     protected function checkValue($data, $format, $applyFormat = false) {
-        if (is_null($data) && !$this->searchNullItems()) {
-            $valid = $this->getNull();
-        } else if (is_string($format)) {
+        if (is_string($format)) {
             return $this->checkValueStringFormat($data, $format, $applyFormat);
+        } else if (is_null($data)) {
+            $valid = $this->getNull();
         } else if (is_array($format)) {
             $a = new ArrayS($data, $this->getNull());
             $a->setCountStrict($this->countStrict);
@@ -246,33 +250,53 @@ class ArrayS extends Structure {
      * @throws \Exception
      */
     protected function checkValueStringFormat($data, $format, $applyFormat = false) {
+        if (!isset(ArrayS::$compiledFormats[$format])) {
+            $compiledString = $this->compileString($format);
+            ArrayS::$compiledFormats[$format] = $compiledString;
+        } else $compiledString = ArrayS::$compiledFormats[$format];
+
+        if ($applyFormat) {
+            return call_user_func($compiledString["format"], $data, $this->getNull());
+        } else {
+            return call_user_func($compiledString["check"], $data, $this->getNull());
+        }
+    }
+
+    function compileString($string) {
         /**
          * Examples:
          *  numeric[-10, 30)
          *  integer(0, inf)
          *  float[0,1]
          */
-        $numeric = '/^(numeric|float|integer|int)(\(|\[).+,[^\]]+(\)|\])$/';
+        $numeric = '/^(numeric|float|integer|int)((\(|\[).+,[^\]]+(\)|\]))$/';
         /**
          * Examples:
          *  string{pendent, payed, ready, cancelled}
          *  integer{10, 100, 1000}
          *  scalar{0, false}
          */
-        $valueSetScalar = '/^(scalar|string|float|integer|int|str|boolean|bool|numeric)\{[^}]*\}$/';
+        $valueSetScalar = '/^(scalar|string|float|integer|int|str|boolean|bool|numeric)(\{[^}]*\})$/';
 
+        $identityStructure = array(
+            "check" => function($data) { return true; },
+            "format" => function($data) { return $data; }
+        );
 
         // allow "type1|type2|..."
-        $types = explode("|", $format);
-        if (count($types) > 1 && $applyFormat) {
+        $types = explode("|", $string);
+        /*if (count($types) > 1 && $applyFormat) {
             throw new \Exception("Can't format \$data to multiple types");
-        }
+        }*/
+
+        /** @var Structure[] $objects */
+        $objects = array();
 
         // Use a do-while to check always $type[0]
         $i = 0;
         do {
             $type = $types[$i];
-            if (preg_match($numeric, $type)) {
+            if (preg_match($numeric, $type, $matches)) {
                 switch ($type[0]) {
                     case "n":
                         $structure = new NumericS();
@@ -285,14 +309,8 @@ class ArrayS extends Structure {
                         break;
                 }
                 /** @var NumericS $structure */
-                $structure->setNull($this->getNull());
-                $structure->setRange(preg_replace("/^(numeric|float|integer)/", "", $type));
-                if ($applyFormat) {
-                    return $structure->format($data);
-                } else {
-                    $valid = $structure->check($data);
-                }
-            } else if (preg_match($valueSetScalar, $type)) {
+                $structure->setRange($matches[2]);
+            } else if (preg_match($valueSetScalar, $type, $matches)) {
                 switch ($type[0] . $type[1]) {
                     default:
                     case "sc":
@@ -315,82 +333,121 @@ class ArrayS extends Structure {
                         break;
                 }
                 /** @var ScalarS $structure */
-                $structure->setNull($this->getNull());
-                $structure->setValueSet(preg_replace('/^[^{]+/', "", $type));
-                if ($applyFormat) {
-                    return $structure->format($data);
-                } else {
-                    $valid = $structure->check($data);
-                }
+                $structure->setValueSet($matches[2]);
             } else {
                 switch ($type) {
-                case "scalar":
-                    $structure = new ScalarS();
-                    break;
-                case "string":
-                case "str":
-                    $structure = new StringS();
-                    break;
-                case "numeric":
-                    $structure = new NumericS();
-                    break;
-                case "integer":
-                case "int":
-                    $structure = new IntegerS();
-                    break;
-                case "float":
-                    $structure = new FloatS();
-                    break;
-                case "boolean":
-                case "bool":
-                    $structure = new BooleanS();
-                    break;
-                case "array":
-                    $structure = new ArrayS();
-                    $structure->setFormat("array");
-                    $structure->setCountStrict($this->countStrict);
-                    break;
-                case "*":
-                case "any":
-                    if ($applyFormat) return $data;
-                    $valid = true;
-                    break;
-                case "null":
-                    if ($applyFormat) return null;
-                    $valid = is_null($data);
-                    break;
-                default:
-                    if (class_exists($format)) {
-                        if ($applyFormat) return $data;
-                        $valid = $data instanceof $format;
-                    } else {
-                        // maybe $format is a simple array (type[] or type[int])
+                    case "scalar":
+                        $structure = new ScalarS();
+                        break;
+                    case "string":
+                    case "str":
+                        $structure = new StringS();
+                        break;
+                    case "numeric":
+                        $structure = new NumericS();
+                        break;
+                    case "integer":
+                    case "int":
+                        $structure = new IntegerS();
+                        break;
+                    case "float":
+                        $structure = new FloatS();
+                        break;
+                    case "boolean":
+                    case "bool":
+                        $structure = new BooleanS();
+                        break;
+                    case "array":
                         $structure = new ArrayS();
-                        $structure->setFormat($format);
+                        $structure->setFormat("array");
                         $structure->setCountStrict($this->countStrict);
-                    }
-                    break;
-                }
-                /** @var Structure $structure */
-                if (isset($structure)) {
-                    $structure->setNull($this->getNull());
-
-                    if ($applyFormat) {
-                        return $structure->format($data);
-                    } else if (!isset($valid) || !$valid) {
-                        try {
-                            $valid = $structure->check($data);
-                        } catch (\Exception $e) {
-                            $valid = false;
+                        break;
+                    case "*":
+                    case "any":
+                        // set structure:identity
+                        $structure = $identityStructure;
+                        break;
+                    case "null":
+                        // set structure:null
+                        $structure = array(
+                            "check" => function($data) { return is_null($data); },
+                            "format" => function() { return null; }
+                        );
+                        break;
+                    default:
+                        if (class_exists($string)) {
+                            // todo: create ObjectS class
+                            $structure = array(
+                                "check" => function($data) use ($string) {
+                                    return $data instanceof $string;
+                                },
+                                "format" => $identityStructure["format"]
+                            );
+                        } else {
+                            // maybe $format is a simple array (type[] or type[int])
+                            $structure = new ArrayS();
+                            $structure->setFormat($string);
+                            $structure->setCountStrict($this->countStrict);
                         }
-                    }
-                } else {
-                    $valid = true;
+                        break;
+                }
+                if (!isset($structure)) {
+                    $structure = $identityStructure;
                 }
             }
-        } while(!$valid and count($types) > ++$i);
+            $objects[] = $structure;
+        } while(count($types) > ++$i);
 
-        return $valid;
+        // Define return functions, depending on the number of $objects
+        // (1 or more)
+        if ($i == 1) {
+            if ($objects[0] instanceof Structure) {
+                $check = function ($data, $null) use ($objects) {
+                    $objects[0]->setNull($null);
+                    return $objects[0]->check($data);
+                };
+                $format = function ($data, $null) use ($objects) {
+                    $objects[0]->setNull($null);
+                    return $objects[0]->format($data);
+                };
+            } else {
+                $check = function ($data) use ($objects) {
+                    return call_user_func($objects[0]["check"], $data);
+                };
+                $format = function ($data) use ($objects) {
+                    return call_user_func($objects[0]["format"], $data);
+                };
+            }
+        } else {
+            $check = function($data, $null) use ($objects) {
+                foreach ($objects as $obj) {
+                    if ($obj instanceof Structure) {
+                        $obj->setNull($null);
+                        if ($obj->check($data)) return true;
+                    } else if (is_array($obj) && call_user_func($obj["check"], $data)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+            $format = function($data, $null) use ($objects) {
+                foreach ($objects as $obj) {
+                    try {
+                        if ($obj instanceof Structure) {
+                            $obj->setNull($null);
+                            return $obj->format($data);
+                        } else {
+                            return call_user_func($obj["format"], $data);
+                        }
+                    } catch (\Exception $e) {}
+                }
+                throw new \Exception("Unable to format \$data");
+            };
+        }
+        return array(
+            "check" => $check,
+            "format" => $format
+        );
     }
 
     /**
