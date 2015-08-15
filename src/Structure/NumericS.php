@@ -11,17 +11,46 @@
 
 namespace Structure;
 
-
+/**
+ * Class NumericS
+ * @package Structure
+ */
 class NumericS extends ScalarS {
+    /**
+     * @var string|null
+     */
     protected $range = null;
 
+    /**
+     * @var int|float
+     */
     protected $lowerBound;
+    /**
+     * @var bool
+     */
     protected $lowerStrict;
+    /**
+     * @var bool
+     */
     protected $lowerInfinity = false;
+    /**
+     * @var int|float
+     */
     protected $upperBound;
+    /**
+     * @var bool
+     */
     protected $upperStrict;
+    /**
+     * @var bool
+     */
     protected $upperInfinity = false;
 
+    /**
+     * Saves the information extracted from range strings
+     * to avoid re-parsing them in the future
+     * @var array
+     */
     protected static $compiledRanges = array();
 
     /**
@@ -34,6 +63,13 @@ class NumericS extends ScalarS {
     }
 
     /**
+     * Takes a string of the form "(a,b)",
+     * with optional square brackets [ and ],
+     * where _a_ and _b_ are real numbers
+     * or the special strings "-inf" and "+inf"
+     *
+     * @api
+     *
      * @param string $range
      * @throws \Exception
      */
@@ -143,6 +179,8 @@ set_info:
     }
 
     /**
+     * @api
+     *
      * @return string
      */
     public function getRange() {
@@ -150,7 +188,9 @@ set_info:
     }
 
     /**
-     * It is assumed that the $data is numeric
+     * It is assumed that the $data is numeric,
+     * so checkType() should be run before
+     *
      * @param integer|float $data
      * @return bool
      */
@@ -179,6 +219,10 @@ set_info:
     }
 
     /**
+     * Runs type, range and value set tests
+     *
+     * @api
+     *
      * @param mixed $data
      * @return bool
      */
@@ -193,6 +237,8 @@ set_info:
     }
 
     /**
+     * @api
+     *
      * @param mixed $data
      * @return float
      * @throws \Exception
