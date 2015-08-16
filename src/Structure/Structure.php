@@ -117,7 +117,7 @@ abstract class Structure {
     public static function ArrayS($format = null, $data = null, $countStrict = true, $null = false) {
         $array = new ArrayS();
         $array->setFormat($format);
-        $array->setData($data = null);
+        $array->setData($data);
         $array->setCountStrict($countStrict);
         $array->setNull($null);
         return $array;
