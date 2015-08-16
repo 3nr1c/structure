@@ -233,15 +233,10 @@ set_info:
      * @return bool
      */
     public function check($data = null, &$failed = null) {
-        if ($this->getNull()) {
-            return (is_null($this->data) || $this->checkType($data, $failed))
-                && $this->checkRange($data, $failed)
-                && $this->checkValueSet($data, $failed);
-        } else {
-            return $this->checkType($data, $failed)
-                && $this->checkRange($data, $failed)
-                && $this->checkValueSet($data, $failed);
-        }
+        $valid = parent::check($data, $failed) && $this->checkRange($data, $failed);
+
+        if (!$valid) Structure::$lastFail = $failed;
+        return $valid;
     }
 
     /**

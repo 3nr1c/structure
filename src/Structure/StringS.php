@@ -16,6 +16,9 @@ namespace Structure;
  * @package Structure
  */
 class StringS extends ScalarS {
+    protected $minLength = 0;
+    protected $maxLength = 0;
+
     /**
      * @param mixed $data
      * @param bool $null
@@ -23,6 +26,34 @@ class StringS extends ScalarS {
     public function __construct($data = null, $null = false) {
         parent::__construct($data, $null);
         $this->setType("string");
+    }
+
+    /**
+     * @param string $data
+     * @param $format
+     * @return bool
+     */
+    protected function checkLength($data = null, &$format) {
+        if ($data === null) $data = $this->getData();
+
+        $valid = $this->minLength <= 0 || strlen($data) >= $this->minLength;
+        $valid = $valid && ($this->maxLength <= 0 || strlen($data) <= $this->maxLength);
+
+        if (!$valid) $format = "string:length";
+
+        return $valid;
+    }
+
+    /**
+     * @param mixed $data
+     * @param $failed
+     * @return bool
+     */
+    public function check($data = null, &$failed = null) {
+        $valid = parent::check($data, $failed) && $this->checkLength($data, $failed);
+
+        if (!$valid) Structure::$lastFail = $failed;
+        return $valid;
     }
 
     /**
