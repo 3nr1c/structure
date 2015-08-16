@@ -1,5 +1,4 @@
-# Structure
-[![Build Status](https://travis-ci.org/3nr1c/structure.svg?branch=master)](https://travis-ci.org/3nr1c/structure)
+# Structure [![Build Status](https://travis-ci.org/3nr1c/structure.svg?branch=master)](https://travis-ci.org/3nr1c/structure)
 
 **Structure** provides a set of classes to check the data type and format of your variables.
 
