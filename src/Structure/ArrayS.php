@@ -262,6 +262,14 @@ class ArrayS extends Structure {
         }
     }
 
+    /**
+     * Returns an array of closures that can check and format
+     * to the $string type
+     * 
+     * @param $string
+     * @return array
+     * @throws \Exception
+     */
     function compileString($string) {
         /**
          * Examples:
