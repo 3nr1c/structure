@@ -20,7 +20,6 @@ class ArrayS extends Structure {
     protected $countStrict = true;
 
     protected $minimumItemNumber = 0;
-
     protected $containsNullItems = null;
 
     protected static $compiledFormats = array();
@@ -131,10 +130,15 @@ class ArrayS extends Structure {
         $failed = array();
 
         if ($this->getNull()) {
-            return (is_null($data) || $this->checkType($data)) && $this->checkFormat($data, $failed);
+            $valid = (is_null($data) || $this->checkType($data, $failed)) && $this->checkFormat($data, $failed);
         } else {
-            return $this->checkType($data) && $this->checkFormat($data, $failed);
+            $valid = $this->checkType($data, $failed) && $this->checkFormat($data, $failed);
         }
+        // save the failures for later checking
+        if (!is_array($failed) || is_array($failed) && count($failed) > 0) {
+            Structure::$lastFail = $failed;
+        }
+        return $valid;
     }
 
     /**
@@ -157,12 +161,16 @@ class ArrayS extends Structure {
 
     /**
      * @param mixed $data
+     * @param $failed
      * @return bool
      */
-    protected function checkType($data = null) {
+    protected function checkType($data = null, &$failed = null) {
         if (is_null($data)) $data = $this->data;
 
-        return is_array($data);
+        $valid = is_array($data);
+
+        if (!$valid) $failed = Structure::typeof($data);
+        return $valid;
     }
 
     /**
@@ -233,10 +241,10 @@ class ArrayS extends Structure {
      */
     protected function checkValue($data, $format, $applyFormat = false, &$valueFailed = null) {
         if (is_string($format)) {
-            $valid = $this->checkValueStringFormat($data, $format, $applyFormat);
+            $valid = $this->checkValueStringFormat($data, $format, $applyFormat, $failed);
 
-            // used to report incorrect value set or range
-            $validType = substr(gettype($data), 0, 3) === substr($format, 0, 3);
+            if (!$valid) $valueFailed = $failed;
+
         } else if (is_null($data)) {
             $valid = $this->getNull();
         } else if (is_array($format)) {
@@ -244,33 +252,11 @@ class ArrayS extends Structure {
             $a->setCountStrict($this->countStrict);
             $a->setFormat($format);
             $valid = $a->check(null, $arrayFailed);
+
+            if (!$valid) $valueFailed = $arrayFailed;
+
         } else {
             $valid = true;
-        }
-
-        if (!$valid) {
-            if (isset($arrayFailed) && count($arrayFailed) > 0) {
-                $valueFailed = $arrayFailed;
-            } else {
-                $valueFailed = gettype($data);
-
-                // float is Structure's alias for double
-                if ($valueFailed === "double") $valueFailed = "float";
-
-                // The type is correct, but the value or range isn't
-                if (isset($validType) && $validType === true) {
-                    switch($valueFailed) {
-                    default:
-                        $valueFailed .= ":value";
-                        break;
-                    case "integer":
-                    case "float":
-                        if (strpos("{", $format) !== false) $valueFailed .= ":value";
-                        else $valueFailed .= ":range";
-                        break;
-                    }
-                }
-            }
         }
 
         return $valid;
@@ -280,10 +266,11 @@ class ArrayS extends Structure {
      * @param mixed $data
      * @param string $format
      * @param bool|false $applyFormat
+     * @param $failed
      * @return bool|array
      * @throws \Exception
      */
-    protected function checkValueStringFormat($data, $format, $applyFormat = false) {
+    protected function checkValueStringFormat($data, $format, $applyFormat = false, &$failed) {
         if (!isset(ArrayS::$compiledFormats[$format])) {
             $compiledString = $this->compileString($format);
             ArrayS::$compiledFormats[$format] = $compiledString;
@@ -292,7 +279,8 @@ class ArrayS extends Structure {
         if ($applyFormat) {
             return call_user_func($compiledString["format"], $data, $this->getNull());
         } else {
-            return call_user_func($compiledString["check"], $data, $this->getNull());
+            $check = $compiledString["check"];
+            return $check($data, $this->getNull(), $failed);
         }
     }
 
@@ -311,7 +299,7 @@ class ArrayS extends Structure {
          *  integer(0, inf)
          *  float[0,1]
          */
-        $numeric = '/^(numeric|float|integer|int)((\(|\[).+,[^\]]+(\)|\]))$/';
+        $numeric = '/^(numeric|float|integer|int)((\(|\[).+,[^\]\)]+(\)|\]))$/';
         /**
          * Examples:
          *  string{pendent, payed, ready, cancelled}
@@ -328,9 +316,6 @@ class ArrayS extends Structure {
 
         // allow "type1|type2|..."
         $types = explode("|", $string);
-        /*if (count($types) > 1 && $applyFormat) {
-            throw new \Exception("Can't format \$data to multiple types");
-        }*/
 
         /** @var Structure[] $objects */
         $objects = array();
@@ -401,6 +386,7 @@ class ArrayS extends Structure {
                             $structure = new ArrayS();
                             $structure->setFormat($string);
                             $structure->setCountStrict($this->countStrict);
+                            $arrayStructure = true;
                         }
                         break;
                 }
@@ -418,30 +404,35 @@ class ArrayS extends Structure {
          * Define return functions, depending on the number of $objects
          * (1 or more)
          */
+        $ret = array();
         if ($i == 1) {
             if ($objects[0] instanceof Structure) {
-                $check = function ($data, $null) use ($objects) {
+                $check = function ($data, $null, &$failed) use ($objects) {
                     $objects[0]->setNull($null);
-                    return $objects[0]->check($data);
+                    return $objects[0]->check($data, $failed);
                 };
                 $format = function ($data, $null) use ($objects) {
                     $objects[0]->setNull($null);
                     return $objects[0]->format($data);
                 };
             } else {
-                $check = function ($data) use ($objects) {
-                    return call_user_func($objects[0]["check"], $data);
+                $check = function ($data, &$failed) use ($objects) {
+                    if (!call_user_func($objects[0]["check"], $data)) {
+                        $failed = Structure::typeof($data);
+                        return false;
+                    }
+                    return true;
                 };
                 $format = function ($data) use ($objects) {
                     return call_user_func($objects[0]["format"], $data);
                 };
             }
         } else {
-            $check = function($data, $null) use ($objects) {
+            $check = function($data, $null, &$failed) use ($objects) {
                 foreach ($objects as $obj) {
                     if ($obj instanceof Structure) {
                         $obj->setNull($null);
-                        if ($obj->check($data)) return true;
+                        if ($obj->check($data, $failed)) return true;
                     } else if (is_array($obj) && call_user_func($obj["check"], $data)) {
                         return true;
                     }
@@ -462,10 +453,14 @@ class ArrayS extends Structure {
                 throw new \Exception("Unable to format \$data");
             };
         }
-        return array(
-            "check" => $check,
-            "format" => $format
-        );
+        $ret["check"] = $check;
+        $ret["format"] = $format;
+
+        if (isset($arrayStructure) && $arrayStructure) {
+            $ret["meta"] = "array";
+        }
+
+        return $ret;
     }
 
     /**

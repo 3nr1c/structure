@@ -38,9 +38,10 @@ class ScalarS extends Structure {
 
     /**
      * @param mixed $data
+     * @param $failed
      * @return bool
      */
-    protected function checkType($data = null) {
+    protected function checkType($data = null, &$failed = null) {
         if (is_null($data)) {
             $data = $this->getData();
         }
@@ -51,39 +52,54 @@ class ScalarS extends Structure {
 
         switch ($this->getType()) {
             default:
-                return false;
+                $valid = false;
+                break;
             case "scalar":
-                return is_scalar($data);
+                $valid = is_scalar($data);
+                break;
             case "numeric":
-                return is_numeric($data);
+                $valid = is_numeric($data);
+                break;
             case "string":
-                return is_string($data);
+                $valid = is_string($data);
+                break;
             case "integer":
-                return is_integer($data);
+                $valid = is_integer($data);
+                break;
             case "float":
-                return is_float($data) || is_integer($data);// numbers without floating point crash
+                $valid = is_float($data) || is_integer($data);// numbers without floating point crash
+                break;
             case "boolean":
-                return is_bool($data);
+                $valid = is_bool($data);
+                break;
         }
+
+        if (!$valid) $failed = Structure::typeof($data);
+        return $valid;
     }
 
     /**
      * @param mixed $data
+     * @param $failed
      * @return bool
      */
-    protected function checkValueSet($data = null) {
+    protected function checkValueSet($data = null, &$failed = null) {
         if (is_null($data)) {
             $data = $this->getData();
         }
 
-        if (count($this->getValueSet()) === 0) {
-            return true;
-        } else {
+        if (count($this->getValueSet()) > 0) {
             if ($this->getType() === "string" && is_string($data)) {
                 $data = trim($data);
             }
-            return in_array($data, $this->getValueSet(), true);
+
+            // search in the $valueSet with strict comparison
+            if (!in_array($data, $this->getValueSet(), true)) {
+                $failed = $this->getType() . ":value";
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -92,10 +108,14 @@ class ScalarS extends Structure {
      * @api
      *
      * @param mixed $data
+     * @param $failed
      * @return boolean
      */
-    public function check($data = null) {
-        return $this->checkType($data) && $this->checkValueSet($data);
+    public function check($data = null, &$failed = null) {
+        $valid = $this->checkType($data, $failed) && $this->checkValueSet($data, $failed);
+
+        if (!$valid) Structure::$lastFail = $failed;
+        return $valid;
     }
 
     /**
@@ -193,7 +213,8 @@ set_info:
                 $value = ($value === "true");
             } else if (preg_match('/^-?[0-9]+(\.[0-9]*)?$/', $value)) {
                 // convert to float or integer
-                if ((float)$value == (int)$value) $value = (int)$value;
+                if ((float)$value == (int)$value && strpos($value, ".") === false)
+                    $value = (int)$value;
                 else $value = (float)$value;
             }
 
@@ -204,4 +225,10 @@ set_info:
         return true;
     }
 
+    public static function isScalarType($type) {
+        $scalarTypes = array("scalar", "numeric", "string", "integer", "float", "boolean", "bool",
+            // three character types are used in ArrayS::checkValue
+            "sca", "num", "str", "int", "flo", "boo");
+        return in_array($type, $scalarTypes);
+    }
 }

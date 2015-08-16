@@ -54,11 +54,12 @@ class FloatS extends NumericS {
 
     /**
      * @param null $data
+     * @param $failed
      * @return bool
      */
-    public function checkType($data = null) {
+    public function checkType($data = null, &$failed = null) {
         if (!$this->getNumeric()) {
-            return parent::checkType($data);
+            return parent::checkType($data, $failed);
         } else {
             if (is_null($data)) {
                 $data = $this->getData();
@@ -68,7 +69,10 @@ class FloatS extends NumericS {
                 return true;
             }
 
-            return is_numeric($data);
+            $valid = is_numeric($data);
+
+            if (!$valid) $failed = Structure::typeof($data);
+            return $valid;
         }
     }
 }

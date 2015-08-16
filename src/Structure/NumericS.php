@@ -192,9 +192,10 @@ set_info:
      * so checkType() should be run before
      *
      * @param integer|float $data
+     * @param $failed
      * @return bool
      */
-    protected function checkRange($data = null) {
+    protected function checkRange($data = null, &$failed = null) {
         if (is_null($this->range)) return true;
 
         if (is_null($data)) {
@@ -215,6 +216,10 @@ set_info:
             $valid = ($valid && ($this->upperInfinity || $data <= $this->upperBound));
         }
 
+        if (!$valid) {
+            $failed = $this->getType() . ":range";
+        }
+
         return $valid;
     }
 
@@ -224,15 +229,18 @@ set_info:
      * @api
      *
      * @param mixed $data
+     * @param $failed
      * @return bool
      */
-    public function check($data = null) {
+    public function check($data = null, &$failed = null) {
         if ($this->getNull()) {
-            return (is_null($this->data) || $this->checkType($data))
-                && $this->checkRange($data)
-                && $this->checkValueSet($data);
+            return (is_null($this->data) || $this->checkType($data, $failed))
+                && $this->checkRange($data, $failed)
+                && $this->checkValueSet($data, $failed);
         } else {
-            return $this->checkType($data) && $this->checkRange($data) && $this->checkValueSet($data);
+            return $this->checkType($data, $failed)
+                && $this->checkRange($data, $failed)
+                && $this->checkValueSet($data, $failed);
         }
     }
 

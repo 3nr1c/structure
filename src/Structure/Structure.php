@@ -20,6 +20,8 @@ abstract class Structure {
     protected $type;
     protected $null;
 
+    protected static $lastFail = null;
+
     /**
      * @param string $type
      * @param mixed $data
@@ -81,15 +83,28 @@ abstract class Structure {
 
     /**
      * @param mixed $data
+     * @param $failed
      * @return boolean
      */
-    abstract public function check($data = null);
+    abstract public function check($data = null, &$failed);
 
     /**
      * @param mixed $data
      * @return mixed
      */
     abstract public function format($data = null);
+
+    public static function clearLastFail() {
+        Structure::$lastFail = null;
+    }
+
+    /**
+     * Returns the last check failure
+     * @return mixed
+     */
+    public static function getLastFail() {
+        return Structure::$lastFail;
+    }
 
     /**
      * @param mixed $format
@@ -163,5 +178,13 @@ abstract class Structure {
         $string->setData($data);
         $string->setNull($null);
         return $string;
+    }
+
+    protected static function typeof($data) {
+        if ($data instanceof \Closure) return "closure";
+
+        $type = gettype($data);
+        if ($type === "double") return "float";
+        return $type;
     }
 }
