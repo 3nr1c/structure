@@ -120,16 +120,17 @@ class ArrayS extends Structure {
      * A test format can be set (read Documentation)
      *
      * @param mixed $data
+     * @param array $format
      * @return bool
      */
-    public function check($data = null) {
+    public function check($data = null, &$format = array()) {
         if (is_null($data)) $data = $this->data;
         if (!isset($this->format)) $this->format = "array";
 
         if ($this->getNull()) {
-            return (is_null($data) || $this->checkType($data)) && $this->checkFormat($data);
+            return (is_null($data) || $this->checkType($data)) && $this->checkFormat($data, $format);
         } else {
-            return $this->checkType($data) && $this->checkFormat($data);
+            return $this->checkType($data) && $this->checkFormat($data, $format);
         }
     }
 
@@ -164,10 +165,11 @@ class ArrayS extends Structure {
     /**
      * It assumes that $data is an array
      * @param mixed $data
+     * @param array $failed
      * @return bool
      * @throws \Exception
      */
-    protected function checkFormat($data = null) {
+    protected function checkFormat($data = null, &$failed = array()) {
         if (is_null($data)) $data = $this->data;
 
         if ($this->format === "array") {
@@ -175,11 +177,14 @@ class ArrayS extends Structure {
         }
 
         if (is_string($this->format)) {
-            foreach ($data as $value) {
-                $valid = $this->checkValue($value, $this->format);
-                if (!$valid) return false;
+            $valid = true;
+            foreach ($data as $key=>$value) {
+                if (!$this->checkValue($value, $this->format, false, $valueFailed)) {
+                    $failed[$key] = $valueFailed;
+                    $valid = false;
+                }
             }
-            return $this->getNull() ? true : count($data) >= $this->minimumItemNumber;
+            return $valid && count($data) >= $this->minimumItemNumber;
         }
 
         /**
@@ -201,18 +206,24 @@ class ArrayS extends Structure {
         $associativeFormat = ArrayS::isAssociative($this->format);
 
         if ($associativeData && $associativeFormat) {
+            $valid = true;
             foreach ($this->getFormat() as $key=>$value) {
                 $testData = array_key_exists($key, $data) ? $data[$key] : null;
-                $valid = $this->checkValue($testData, $value);
-                if (!$valid) return false;
+                if (!$this->checkValue($testData, $value, false, $valueFailed)) {
+                    $failed[$key] = $valueFailed;
+                    $valid = false;
+                }
             }
-            return true;
+            return $valid;
         } else if (!$associativeData && !$associativeFormat) {
+            $valid = true;
             for ($i = 0; $i < count($data); $i++) {
-                $valid = $this->checkValue($data[$i], $this->format[$i]);
-                if (!$valid) return false;
+                if (!$this->checkValue($data[$i], $this->format[$i], false, $valueFailed)) {
+                    $failed[$i] = $valueFailed;
+                    $valid = false;
+                }
             }
-            return true;
+            return $valid;
         } else {
             return false;
         }
@@ -222,21 +233,30 @@ class ArrayS extends Structure {
      * @param mixed $data
      * @param mixed $format
      * @param bool $applyFormat
+     * @param array $valueFailed
      * @return bool|array
      * @throws \Exception
      */
-    protected function checkValue($data, $format, $applyFormat = false) {
+    protected function checkValue($data, $format, $applyFormat = false, &$valueFailed = array()) {
         if (is_string($format)) {
-            return $this->checkValueStringFormat($data, $format, $applyFormat);
+            $valid = $this->checkValueStringFormat($data, $format, $applyFormat);
         } else if (is_null($data)) {
             $valid = $this->getNull();
         } else if (is_array($format)) {
             $a = new ArrayS($data, $this->getNull());
             $a->setCountStrict($this->countStrict);
             $a->setFormat($format);
-            $valid = $a->check();
+            $valid = $a->check(null, $arrayFailed);
         } else {
             $valid = true;
+        }
+
+        if (!$valid) {
+            if (isset($arrayFailed) && count($arrayFailed) > 0) {
+                $valueFailed = $arrayFailed;
+            } else {
+                $valueFailed = gettype($data);
+            }
         }
 
         return $valid;
@@ -265,7 +285,7 @@ class ArrayS extends Structure {
     /**
      * Returns an array of closures that can check and format
      * to the $string type
-     * 
+     *
      * @param $string
      * @return array
      * @throws \Exception
