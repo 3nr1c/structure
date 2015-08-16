@@ -107,11 +107,16 @@ public function setNull($null);
 public function getNull();
 
 // to check everything (type and range/format)
-public function check($data = null);
+public function check($data = null, &$failed = null);
 
 // to format things (specially powerfull in ArrayS)
 public function format($data = null);
+
+public static function getLastFail();
+public static function clearLastFail();
 ```
+
+The ```&$failed``` argument of ```check``` lets you create a variable that will tell you why this method returned false. You can access to the last error information, and erase it, with the static methods ```getLastFail``` and ```clearLastFail```. The possible values for this failure variables are specified in their section below.
 
 ## Static shortcuts
 
@@ -122,20 +127,33 @@ public static function ArrayS($format = null, $data = null, $countStrict = true,
 public static function NumericS($range = null, $data = null, $null = false);
 public static function IntegerS($range = null, $data = null, $null = false);
 public static function FloatS($range = null, $data = null, $null = false);
+public static function StringS($data = null, $null = false);
 ```
 
-All these methods return respectively an ArrayS, NumericS, IntegerS or FloatS object, with the
+All these methods return respectively an ArrayS, NumericS, IntegerS, FloatS or StringS object, with the
  properties set as passed by the arguments.
 
 ## Class ScalarS
 
-This class runs the ```is_scalar()``` test to a variable.
+This class runs the ```is_scalar()``` test to a variable. If the result is ```false```, the ```$failed``` var will show the type of the tested variable.
 
 Usage:
 ```php
 $scalar = new \Structure\ScalarS();
-$scalar->check($var);
+if (!$scalar->check($var, $failed)) {
+  print "Error: expected _scalar_, got " . $failed;
+}
 ```
+
+This class and all its children have the ```setValueSet``` method, which lets you define possible values for the data to be checked. This method can take either a variable number of arguments, or a string with values separated by commas between curly brackets ```{``` and ```}```:
+
+```php
+$scalar->setFormat("value1", "value2", 10, 11, 12);
+// or
+$scalar->setFormat("{value1, value2, 10, 11, 12, commas and brackets can be escaped: \{\,}");
+```
+
+If the tested variable is scalar but isn't in the defined set, the ```$failed``` var will be ```"scalar:value"```.
 
 ## Class NumericS
 
@@ -171,6 +189,8 @@ $numeric->check(10.42);// false
 
 The left number must be *less than or equal to* the right number. 
 
+If the type of the tested variable is correct, but the range isn't, the ```$failed``` variable will have the value ```"numeric:range"```.
+
 ## Classes IntegerS and FloatS
 
 They both inherit from ```NumericS```. The only difference is that the **check** method of IntegerS uses ```is_integer``` 
@@ -202,6 +222,8 @@ $float->check("3.2");// true
 $integer->check("5");// true
 ```
 
+If the type of the tested variable is correct, but the range isn't, the ```$failed``` variable will be either ```"integer:range"``` or ```"float:range"```.
+
 ## Class StringS
 
 This class runs the ```is_string()``` test against a variable.
@@ -214,7 +236,7 @@ $string->check($var);
 
 ## Class ArrayS
 
-This class has the following methods:
+This class has the following methods (plus all of the methods inherited from ```Structure```):
 
 ```php
 public function setFormat($format);
