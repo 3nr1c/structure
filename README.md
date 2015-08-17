@@ -250,6 +250,17 @@ $string = new \Structure\StringS();
 $string->check($var);
 ```
 
+Min and max length can be required using ```setLength```:
+
+```php
+$string->setLength(4); // 4 characters or more
+$string->setLength(4, 10); // 4 to 10 characters
+$string->setLength(0, 10); // up to 10 characters
+$string->setLength("(4..10)"); // 4 to 10 characters
+```
+
+If the test data is a string but does not match the length, the ```$fail``` var will have the value ```"string:length"```.
+
 ## Class ArrayS
 
 This class has the following methods (plus all the methods inherited from ```Structure```):
@@ -320,7 +331,8 @@ $array->setFormat(array(
     "int",
     "string",
     array("bool", "int", "float"),
-    "numeric[]"
+    "numeric[]",
+    "string(8..10)"
 );
 ```
 
@@ -336,6 +348,7 @@ $array->setFormat(array(
     "abc" => "array",
     "xyz" => array(
         "integer[]",
+        "string(..5)[]",
         array(
             "hello" => "bool"
         )
@@ -417,6 +430,7 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 * ArrayS: mixed simple arrays: ```"(integer|float)[]"```
 * ArrayS: nested simple arrays: ```"integer[][]"```, ```"(integer[]|string[])[]"```
 * ScalarS: ```true``` and ```false``` tokens can be escaped to become strings: ```"{\\true, \\false}"```
+* StringS: length test. It can be defined with ```setLength```. For arrays, the syntax is ```"string(min..max)"```
 
 # Planned features
 
