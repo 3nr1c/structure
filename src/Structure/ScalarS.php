@@ -112,6 +112,9 @@ class ScalarS extends Structure {
      * @return boolean
      */
     public function check($data = null, &$failed = null) {
+        // reset var if it is defined
+        $failed = null;
+
         $valid = $this->checkType($data, $failed) && $this->checkValueSet($data, $failed);
 
         if (!$valid) Structure::$lastFail = $failed;
