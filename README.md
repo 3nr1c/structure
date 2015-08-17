@@ -153,6 +153,22 @@ $scalar->setFormat("value1", "value2", 10, 11, 12);
 $scalar->setFormat("{value1, value2, 10, 11, 12, commas and brackets can be escaped: \{\,}");
 ```
 
+```true``` and ```false``` tokens evaluate to booleans If you need the strings "true" and "false", escape them
+
+```php
+$scalar->setFormat("{true, false}");
+$scalar->check(true); //true
+$scalar->check(false); //true
+$scalar->check("true"); //false
+$scalar->check("false"); //false
+
+$scalar->setFormat("{\\true, \\false}");
+$scalar->check(true); //false
+$scalar->check(false); //false
+$scalar->check("true"); //true
+$scalar->check("false"); //false
+```
+
 If the tested variable is scalar but isn't in the defined set, the ```$failed``` var will be ```"scalar:value"```.
 
 ## Class NumericS
@@ -236,7 +252,7 @@ $string->check($var);
 
 ## Class ArrayS
 
-This class has the following methods (plus all of the methods inherited from ```Structure```):
+This class has the following methods (plus all the methods inherited from ```Structure```):
 
 ```php
 public function setFormat($format);
@@ -266,6 +282,34 @@ $array->setFormat("integer[+]"); // checks for 1 or more integers
 $array->setFormat("scalar[5+]"); // checks for 5 or more scalars
 ```
 
+Types can be mixed using the vertical bar ```|```:
+
+```php
+$array->setFormat("(string|int|bool)[4+]");
+$array->setFormat("(float|null)[]");
+```
+
+And the token ```[]``` can be "nested", to define multidimensional arrays
+
+```php
+$array->setFormat("integer[][]");
+$array->setFormat("(integer[]|float[])[]");
+
+// Beware of dimensions. This:
+$array->setFormat("integer[2][3]");
+// Would check true with this:
+$array->check(array(
+  array(1, 2),
+  array(3, 4),
+  array(5, 6)
+)); // true
+
+// this:
+$array->setFormat("integer|float[]");
+// is different from:
+$array->setFormat("(integer|float)[]");
+```
+
 The array type is used to represent more complex array structures. If you expect an array to be sequential (i.e., not
 key-value), the format should be an array of types. Again, if all array elements have to be of the same type, the syntax
 above is recommended.
@@ -285,8 +329,10 @@ to check, make sure you run the ```$array->setCountStrict(false)``` command.
  
 ```php
 $array->setFormat(array(
-    "foo" => "string"
-    "bar" => "int[3,10)"
+    "foo" => "string",
+    "foo2" => "string{hello, bye}[]",
+    "bar" => "int[3,10)",
+    "bar2" => "int[3,10)[4+]",
     "abc" => "array",
     "xyz" => array(
         "integer[]",
@@ -296,7 +342,7 @@ $array->setFormat(array(
     )
 ));
 ```
-As you can see, it has a recursive definition
+As you can see, it has a recursive definition.
 
 ## Working with Value Sets
 
