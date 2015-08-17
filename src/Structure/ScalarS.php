@@ -211,6 +211,10 @@ set_info:
             if ($value === "true" || $value === "false") {
                 // convert to boolean
                 $value = ($value === "true");
+            } else if ($value === "null") {
+                $value = null;
+            } else if ($value === "\\true" || $value === "\\false" || $value === "\\null") {
+                $value = substr($value, 1);
             } else if (preg_match('/^-?[0-9]+(\.[0-9]*)?$/', $value)) {
                 // convert to float or integer
                 if ((float)$value == (int)$value && strpos($value, ".") === false)
