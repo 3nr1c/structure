@@ -73,4 +73,19 @@ class StringTest extends PHPUnit_Framework_TestCase {
             }
         } while ($n++ < 1);
     }
+
+    function testStringInArray() {
+        $array = new \Structure\ArrayS();
+        $array->setFormat(array("string(2..5)", "string(2..)", "string(..5)", "string(2..2)"));
+
+        $correct = array("abc", "abcdefg", "abcde", "ab");
+
+        $this->assertTrue($array->check($correct, $fail));
+        $this->assertEmpty($fail);
+
+        $incorrect = array("abcdef", "", "abcdefg", "abc");
+
+        $this->assertFalse($array->check($incorrect, $fail));
+        $this->assertEquals(array_fill(0, 4, "string:length"), $fail);
+    }
 }

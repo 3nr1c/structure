@@ -309,6 +309,16 @@ class ArrayS extends Structure {
          */
         $valueSetScalar = '/^(scalar|string|float|integer|int|str|boolean|bool|numeric)?(\{[^}]*\})$/';
 
+        /**
+         * Examples:
+         *  string(5..10)
+         *  string(5..)
+         *  string(..10)
+         *  string(5..5) // strict length
+         *  string(..) // pointless, but valid
+         */
+        $lengthString = '/^string(\(\d*\.\.\d*\))$/';
+
         $identityStructure = array(
             "check" => function($data) { return true; },
             "format" => function($data) { return $data; }
@@ -344,6 +354,9 @@ class ArrayS extends Structure {
                 }
                 /** @var ScalarS $structure */
                 $structure->setValueSet($matches[2]);
+            } else if (preg_match($lengthString, $type, $matches)) {
+                $structure = new StringS();
+                $structure->setLength($matches[1]);
             } else {
                 switch ($type) {
                     case "scalar": $structure = new ScalarS(); break;
