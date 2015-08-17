@@ -113,4 +113,23 @@ class ScalarTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($scalar->check("hello, world!"));
         $this->assertTrue($scalar->check("{scape}"));
     }
+
+    public function testEscape() {
+        $scalar = new \Structure\ScalarS();
+        $scalar->setValueSet("{true, false}");
+
+        $this->assertTrue($scalar->check(true));
+        $this->assertTrue($scalar->check(false));
+
+        $this->assertFalse($scalar->check("true"));
+        $this->assertFalse($scalar->check("false"));
+
+        $scalar->setValueSet("{\\true, \\false}");
+
+        $this->assertFalse($scalar->check(true));
+        $this->assertFalse($scalar->check(false));
+
+        $this->assertTrue($scalar->check("true"));
+        $this->assertTrue($scalar->check("false"));
+    }
 }

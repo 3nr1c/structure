@@ -370,6 +370,7 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 * ArrayS: multiple types for a value: ```"integer|float"```, ```"string|null"```
 * ArrayS: mixed simple arrays: ```"(integer|float)[]"```
 * ArrayS: nested simple arrays: ```"integer[][]"```, ```"(integer[]|string[])[]"```
+* ScalarS: ```true``` and ```false``` tokens can be escaped to become strings: ```"{\\true, \\false}"```
 
 # Planned features
 
