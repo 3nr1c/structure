@@ -464,5 +464,16 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($array->check($validMatrix));
         $this->assertFalse($array->check($invalidMatrix1));
+
+        $twoByThree = array(
+            array(1, 2),
+            array(3, 4),
+            array(5, 6)
+        );
+
+        $array->setFormat("integer[2][3]");
+        $this->assertTrue($array->check($twoByThree));
+        $this->assertFalse($array->check($validMatrix));
+        $this->assertFalse($array->check($invalidMatrix1));
     }
 }
