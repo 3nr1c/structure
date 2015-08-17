@@ -160,10 +160,10 @@ class ScalarS extends Structure {
 
             // parse the string argument
             for ($i = 1; $i < strlen($arg); $i++) {
-                if ($arg[$i] === '}' && $arg[$i - 1] !== '\\') {
+                if ($matchedBracket) {
+                    throw new \Exception("Unexpected character '" . $arg[$i] . "' after '}'");
+                } else if ($arg[$i] === '}' && $arg[$i - 1] !== '\\') {
                     $matchedBracket = true;
-                } else if ($matchedBracket) {
-                    throw new \Exception("Unexpected character ' ' after '}'");
                 } else if ($arg[$i] === ',' && $arg[$i - 1] !== '\\') {
                     $valueSet[] = "";
                 } else if ($arg[$i] === '\\') {
@@ -211,9 +211,7 @@ set_info:
             if ($value === "true" || $value === "false") {
                 // convert to boolean
                 $value = ($value === "true");
-            } else if ($value === "null") {
-                $value = null;
-            } else if ($value === "\\true" || $value === "\\false" || $value === "\\null") {
+            } else if ($value === "\\true" || $value === "\\false") {
                 $value = substr($value, 1);
             } else if (preg_match('/^-?[0-9]+(\.[0-9]*)?$/', $value)) {
                 // convert to float or integer
