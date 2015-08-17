@@ -162,7 +162,8 @@ class NumericS extends ScalarS {
 
         if (count($rangeInformation) !== 4) {
             throw new \Exception("Incorrect range string format");
-        } else if ((float)$rangeInformation[2] < (float)$rangeInformation[1]) {
+        } else if ($rangeInformation[1] !== "-inf" && $rangeInformation[2] !== "+inf"
+                    && (float)$rangeInformation[2] < (float)$rangeInformation[1]) {
             throw new \Exception("Upper bound must be >= (greater than or equal to) lower bound");
         }
 

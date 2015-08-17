@@ -187,6 +187,11 @@ class NumericTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($numeric->check(0));
         $this->assertTrue($numeric->check(1));
         $this->assertTrue($numeric->check(147821764713627581));
+
+        $numeric->setRange("[1,inf)");
+        $this->assertFalse($numeric->check(0));
+        $this->assertTrue($numeric->check(1));
+        $this->assertTrue($numeric->check(147821764713627581));
     }
 
     public function testBadInfinities() {
