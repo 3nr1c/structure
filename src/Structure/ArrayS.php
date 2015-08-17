@@ -219,7 +219,7 @@ class ArrayS extends Structure {
         if ($associativeData == $associativeFormat) {
             $valid = true;
             foreach ($this->getFormat() as $key=>$value) {
-                $testData = array_key_exists($key, $data) ? $data[$key] : null;
+                $testData = isset($data[$key]) ? $data[$key] : null;
                 if (!$this->checkValue($testData, $value, false, $valueFailed)) {
                     $failed[$key] = $valueFailed;
                     $valid = false;
@@ -483,7 +483,7 @@ class ArrayS extends Structure {
 
         if ($associativeData && $associativeFormat) {
             foreach ($this->getFormat() as $key=>$value) {
-                if (!array_key_exists($key, $this->data)) {
+                if (!isset($this->data[$key])) {
                     if ($this->null) {
                         $this->data[$key] = null;
                     } else {
