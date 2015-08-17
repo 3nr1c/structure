@@ -15,6 +15,7 @@
 **[Class ArrayS](#class-arrays)**<br/>
 **[Working with Value Sets](#working-with-value-sets)**<br/>
 **[Further info](#further-info)**<br/>
+**[Changelog](#changelog)**<br/>
 **[Planned features](#planned-features)**<br/>
 
 ## License
@@ -359,15 +360,21 @@ $array->check($test2);//false
 
 You can read more documentation by running ```composer doc``` (phpdoc needed) and by looking at the test cases.
 
+# Changelog
+
+**0.5.0**
+
+* Compilation of strings for ArrayS, ScalarS (value sets) and NumericS (integer ranges) to avoid re-parsing
+* Failure reporting: all ```check``` methods accept as second argument a variable to be created to return what failed, if the test evaluates to ```false```. The last occurred error can be retrieved with ```Structure::getLastFail()``` and removed with ```Structure::clearLastFail()```
+* ArrayS: quantifiers for simple array description: ```"type[*]"```, ```"type[+]"```, ```"type[10+]"```
+* ArrayS: multiple types for a value: ```"integer|float"```, ```"string|null"```
+* ArrayS: mixed simple arrays: ```"(integer|float)[]"```
+* ArrayS: nested simple arrays: ```"integer[][]"```, ```"(integer[]|string[])[]"```
+
 # Planned features
 
-* [x] Quick static functions for type testing (ArrayS::check())
-* [x] Improvement for ranges: infinities
-* [x] Enum type: "{1,2,10,3}"
 * [ ] Date formats: timestamp, mysql date/time/datetime, standard times
 * [ ] Email, ip, hash formats
 * [ ] Objects: attributes (name, visibility) and methods (name, visibility, parameters)
 * [ ] Regexp for strings
-* [ ] ArrayS: output what failed after check()
 * [ ] ArrayS: mark some keys as optional
-* [ ] ArrayS: "null[]"
