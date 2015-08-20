@@ -1,10 +1,11 @@
 <?php
-
 /**
- * Created by PhpStorm.
- * User: enric
- * Date: 16/8/15
- * Time: 17:17
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @author Enric Florit
+ * @since 0.5.0
  */
 
 use Structure\Structure;
