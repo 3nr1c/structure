@@ -448,8 +448,9 @@ class ArrayS extends Structure {
                     if ($obj instanceof Structure) {
                         $obj->setNull($null);
                         if ($obj->check($data, $failed)) return true;
-                    } else if (is_array($obj) && call_user_func($obj["check"], $data, $null, $failed)) {
-                        return true;
+                    } else if (is_array($obj) && isset($obj["check"])) {
+                        $check = $obj["check"];
+                        if ($check($data, $null, $failed)) return true;
                     }
                 }
                 return false;
