@@ -320,7 +320,7 @@ class ArrayS extends Structure {
         $lengthString = '/^string(\(\d*\.\.\d*\))$/';
 
         $identityStructure = array(
-            "check" => function($data) { return true; },
+            "check" => function($data, $null, &$failed) { return true; },
             "format" => function($data) { return $data; }
         );
 
@@ -381,7 +381,11 @@ class ArrayS extends Structure {
                     case "null":
                         // set structure:null
                         $structure = array(
-                            "check" => function($data) { return is_null($data); },
+                            "check" => function($data, $null, &$failed) {
+                                $valid = is_null($data);
+                                if (!$valid) $failed = Structure::typeof($data);
+                                return $valid;
+                            },
                             "format" => function() { return null; }
                         );
                         break;
@@ -389,8 +393,12 @@ class ArrayS extends Structure {
                         if (class_exists($string)) {
                             // todo: create ObjectS class
                             $structure = array(
-                                "check" => function($data) use ($string) {
-                                    return $data instanceof $string;
+                                "check" => function($data, $null, &$failed) use ($string) {
+                                    if (is_null($data)) $valid = $null;
+                                    else $valid = $data instanceof $string;
+
+                                    if (!$valid) $failed = Structure::typeof($data);
+                                    return $valid;
                                 },
                                 "format" => $identityStructure["format"]
                             );
@@ -429,13 +437,7 @@ class ArrayS extends Structure {
                     return $objects[0]->format($data);
                 };
             } else {
-                $check = function ($data, &$failed) use ($objects) {
-                    if (!call_user_func($objects[0]["check"], $data)) {
-                        $failed = Structure::typeof($data);
-                        return false;
-                    }
-                    return true;
-                };
+                $check = $objects[0]["check"];
                 $format = function ($data) use ($objects) {
                     return call_user_func($objects[0]["format"], $data);
                 };
@@ -446,7 +448,7 @@ class ArrayS extends Structure {
                     if ($obj instanceof Structure) {
                         $obj->setNull($null);
                         if ($obj->check($data, $failed)) return true;
-                    } else if (is_array($obj) && call_user_func($obj["check"], $data)) {
+                    } else if (is_array($obj) && call_user_func($obj["check"], $data, $null, $failed)) {
                         return true;
                     }
                 }

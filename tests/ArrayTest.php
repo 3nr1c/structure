@@ -476,4 +476,26 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($array->check($validMatrix));
         $this->assertFalse($array->check($invalidMatrix1));
     }
+
+    public function testNullValues() {
+        $array = \Structure\Structure::ArrayS(array(
+            "id" => "null"
+        ));
+
+        $this->assertTrue($array->check(array("id" => null)));
+
+        $this->assertFalse($array->check(array("id" => "abc")));
+        $this->assertFalse($array->check(array("id" => 30)));
+        $this->assertFalse($array->check(array("id" => array())));
+
+        $array->setFormat(array(
+            "id" => "null|integer"
+        ));
+
+        $this->assertTrue($array->check(array("id" => null)));
+        $this->assertTrue($array->check(array("id" => 30)));
+
+        $this->assertFalse($array->check(array("id" => "abc")));
+        $this->assertFalse($array->check(array("id" => array())));
+    }
 }
