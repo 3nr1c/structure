@@ -498,4 +498,23 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($array->check(array("id" => "abc")));
         $this->assertFalse($array->check(array("id" => array())));
     }
+
+    public function testAny() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat(array(
+            "id" => "any",
+            "date" => "*"
+        ));
+
+        $this->assertTrue($checker->check(array("id"=>10,"date"=>false)));
+        $this->assertTrue($checker->check(array("id"=>"hello","date"=>123)));
+        $this->assertTrue($checker->check(array("id"=>true,"date"=>15.3)));
+        $this->assertTrue($checker->check(array("id"=>12.3,"date"=>"hello")));
+        $this->assertTrue($checker->check(array("id"=>false,"date"=>false)));
+        $this->assertTrue($checker->check(array("id"=>null,"date"=>null)));
+        $this->assertFalse($checker->check(array()));
+
+        $checker->setNull(true);
+        $this->assertTrue($checker->check(array()));
+    }
 }
