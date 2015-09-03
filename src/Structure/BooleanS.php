@@ -33,8 +33,10 @@ class BooleanS extends ScalarS {
         if (is_string($data)) {
             // All strings (except "") evaluate true with boolval
             return $data === "true";
-        } else {
+        } else if (function_exists("boolval")) {
             return boolval($data);
+        } else {
+            return !!$data;
         }
     }
 }
