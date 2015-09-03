@@ -15,4 +15,24 @@ class BooleanFormatTest extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse($bool->format(0));
     }
+
+    function testNumericToBooleanFormat() {
+        $bool = new \Structure\BooleanS();
+
+        $this->assertTrue($bool->format("1"));
+        $this->assertTrue($bool->format("-1"));
+
+        $this->assertTrue($bool->format("1.5"));
+        $this->assertTrue($bool->format("-1.5"));
+
+        $this->assertFalse($bool->format("0"));
+    }
+
+    function testStringToBooleanFormat() {
+        $bool = new \Structure\BooleanS();
+
+        $this->assertTrue($bool->format("true"));
+
+        $this->assertFalse($bool->format("false"));
+    }
 }

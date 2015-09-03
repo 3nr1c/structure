@@ -30,11 +30,8 @@ class BooleanS extends ScalarS {
      * @return bool
      */
     public function format($data = null) {
-        if (is_string($data)) {
-            // All strings (except "") evaluate true with boolval
+        if (is_string($data) && !is_numeric($data)) {
             return $data === "true";
-        } else if (function_exists("boolval")) {
-            return boolval($data);
         } else {
             return !!$data;
         }
