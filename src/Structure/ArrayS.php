@@ -60,6 +60,38 @@ class ArrayS extends Structure {
     }
 
     /**
+     * Takes a string argument that can be either a valid JSON string, or
+     * a path to a file containing a valid JSON string. If the syntax is
+     * invalid or the file can't be accessed, an \Exception will be thrown
+     *
+     * @param string $format
+     * @return bool
+     * @throws \Exception
+     */
+    public function setJsonFormat($format) {
+        if (!is_string($format)) throw new \Exception("JsonFormat must be a valid json string or a path to a file");
+
+        if (file_exists($format)) {
+            $handler = fopen($format, 'r');
+            $contents = fread($handler, filesize($format));
+            fclose($handler);
+
+            $format = $contents;
+        }
+        $format = trim($format);
+
+        $arrayFormatCandidate = json_decode($format, true, 1024);
+
+        $error = json_last_error();
+        if ($error === JSON_ERROR_NONE) {
+            $this->setFormat($arrayFormatCandidate);
+            return true;
+        }
+
+        throw new \Exception("Invalid Json format or file");
+    }
+
+    /**
      * Parses expressions matching /\[(\d+|\d*\+|\*)?\]/
      *
      * @param string $sqBrackets

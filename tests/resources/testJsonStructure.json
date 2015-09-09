@@ -1,0 +1,6 @@
+{
+	"id": "integer[1,inf)",
+	"name":	"string(3..40)",
+	"age": "integer[0,120]",
+	"marks": "float[0,10][]"
+}
