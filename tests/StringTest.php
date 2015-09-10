@@ -88,4 +88,19 @@ class StringTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($array->check($incorrect, $fail));
         $this->assertEquals(array_fill(0, 4, "string:length"), $fail);
     }
+
+    function testStringArrayCompact() {
+        $array = new \Structure\ArrayS();
+        $array->setFormat("string(1..)[+]");
+
+        $correct1 = array("a");
+        $correct2 = array("a", "abc");
+        $this->assertTrue($array->check($correct1));
+        $this->assertTrue($array->check($correct2));
+
+        $incorrect1 = array();
+        $incorrect2 = array("");
+        $this->assertFalse($array->check($incorrect1));
+        $this->assertFalse($array->check($incorrect2));
+    }
 }
