@@ -105,8 +105,8 @@ class ArrayS extends Structure {
         } else if ($length > 2 && $sqBrackets[$length - 2] === '+') {// [n+] case
             $this->minimumItemNumber = substr($sqBrackets, 1, -2);
         } else {// [n] case
-            $count = substr($sqBrackets, 1, -1);
-            $this->format = array_fill(0, intval($count), $this->format);
+            $count = intval(substr($sqBrackets, 1, -1));
+            $this->format = $count > 0 ? array_fill(0, $count, $this->format) : array();
         }
     }
 
