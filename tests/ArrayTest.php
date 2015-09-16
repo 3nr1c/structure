@@ -517,4 +517,18 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $checker->setNull(true);
         $this->assertTrue($checker->check(array()));
     }
+
+    /**
+     * Test made due to concerns with php<5.6's array_fill:
+     * http://php.net/array_fill
+     */
+    public function testZeroElements() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat("string[0]");
+
+        $this->assertTrue($checker->check(array()));
+        $this->assertFalse($checker->check(array("string")));
+        $this->assertFalse($checker->check(array(1)));
+        $this->assertFalse($checker->check(array(false)));
+    }
 }
