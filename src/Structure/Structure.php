@@ -169,12 +169,14 @@ abstract class Structure {
     }
 
     /**
+     * @param string $valueSet
      * @param mixed $data
      * @param bool|false $null
      * @return StringS
      */
-    public static function StringS($data = null, $null = false) {
+    public static function StringS($valueSet = null, $data = null, $null = false) {
         $string = new StringS();
+        $string->setValueSet($valueSet);
         $string->setData($data);
         $string->setNull($null);
         return $string;

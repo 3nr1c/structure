@@ -151,37 +151,36 @@ class ScalarS extends Structure {
 
             if (isset(ScalarS::$compiledValueSets[$arg])) {
                 $valueSet = ScalarS::$compiledValueSets[$arg];
-                goto set_info;
-            }
-
-            if ($arg[0] !== "{") {
-                throw new \Exception("Value set definition must start with '{'");
-            }
-
-            $matchedBracket = false;
-            $valueSet = array("");
-
-            // parse the string argument
-            for ($i = 1; $i < strlen($arg); $i++) {
-                if ($matchedBracket) {
-                    throw new \Exception("Unexpected character '" . $arg[$i] . "' after '}'");
-                } else if ($arg[$i] === '}' && $arg[$i - 1] !== '\\') {
-                    $matchedBracket = true;
-                } else if ($arg[$i] === ',' && $arg[$i - 1] !== '\\') {
-                    $valueSet[] = "";
-                } else if ($arg[$i] === '\\') {
-                    if ($i + 1 < strlen($arg) && $arg[$i + 1] !== ',' && $arg[$i + 1] !== '}') {
-                        $valueSet[count($valueSet) - 1] .= "\\";
-                    }
-                } else {
-                    $valueSet[count($valueSet) - 1] .= $arg[$i];
+            } else {
+                if ($arg[0] !== "{") {
+                    throw new \Exception("Value set definition must start with '{'");
                 }
+
+                $matchedBracket = false;
+                $valueSet = array("");
+
+                // parse the string argument
+                for ($i = 1; $i < strlen($arg); $i++) {
+                    if ($matchedBracket) {
+                        throw new \Exception("Unexpected character '" . $arg[$i] . "' after '}'");
+                    } else if ($arg[$i] === '}' && $arg[$i - 1] !== '\\') {
+                        $matchedBracket = true;
+                    } else if ($arg[$i] === ',' && $arg[$i - 1] !== '\\') {
+                        $valueSet[] = "";
+                    } else if ($arg[$i] === '\\') {
+                        if ($i + 1 < strlen($arg) && $arg[$i + 1] !== ',' && $arg[$i + 1] !== '}') {
+                            $valueSet[count($valueSet) - 1] .= "\\";
+                        }
+                    } else {
+                        $valueSet[count($valueSet) - 1] .= $arg[$i];
+                    }
+                }
+
+                if (!$matchedBracket) throw new \Exception("Expected character '}' at the end of value set string");
+
+                NumericS::$compiledValueSets[$arg] = $valueSet;
             }
 
-            if (!$matchedBracket) throw new \Exception("Expected character '}' at the end of value set string");
-
-            NumericS::$compiledValueSets[$arg] = $valueSet;
-set_info:
             if (!$this->toTypeFromString($valueSet)) {
                 return false;
             } else {
