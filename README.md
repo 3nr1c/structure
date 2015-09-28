@@ -166,7 +166,7 @@ $scalar->setFormat("{\\true, \\false}");
 $scalar->check(true); //false
 $scalar->check(false); //false
 $scalar->check("true"); //true
-$scalar->check("false"); //false
+$scalar->check("false"); //true
 ```
 
 If the tested variable is scalar but isn't in the defined set, the ```$failed``` var will be ```"scalar:value"```.
