@@ -182,6 +182,15 @@ abstract class Structure {
         return $string;
     }
 
+    /**
+     * Returns a string with the type of $data in lower case.
+     * Unlike php's gettype, this method will:
+     *  - Return "closure" for anonymous functions (instead of "object")
+     *  - Return "float", instead of "double"
+     *
+     * @param mixed $data
+     * @return string
+     */
     public static function typeof($data) {
         if ($data instanceof \Closure) return "closure";
 
