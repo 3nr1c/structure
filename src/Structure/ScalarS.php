@@ -130,7 +130,8 @@ class ScalarS extends Structure {
         settype($data, $this->getType());
 
         if (!$this->checkValueSet($data)) {
-            return $this->getValueSet()[0];
+            $valueSet = $this->getValueSet();
+            return $valueSet[0];
         } else {
             return $data;
         }

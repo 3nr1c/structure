@@ -259,7 +259,8 @@ set_info:
             if ($this->getNull()) {
                 return null;
             } else if (!$validValue) {
-                return $this->getValueSet()[0];
+                $valueSet = $this->getValueSet();
+                return $valueSet[0];
             } else {
                 throw new \Exception("Unable to format " . $this->getType() . " to range" . $this->getRange());
             }
@@ -280,7 +281,8 @@ set_info:
             } else if ($this->getNull()) {
                 return null;
             } else if (!$validValue) {
-                return $this->getValueSet()[0];
+                $valueSet = $this->getValueSet();
+                return $valueSet[0];
             } else {
                 throw new \Exception("Unable to format " . $this->getType() . " to range" . $this->getRange());
             }
