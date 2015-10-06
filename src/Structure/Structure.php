@@ -182,7 +182,7 @@ abstract class Structure {
         return $string;
     }
 
-    protected static function typeof($data) {
+    public static function typeof($data) {
         if ($data instanceof \Closure) return "closure";
 
         $type = strtolower(gettype($data));
