@@ -14,7 +14,7 @@
   },
   "description": "Structure provides a set of classes to check the data type and format of your variables.",
   "require": {
-    "php": ">=5.4.0"
+    "php": ">=5.3.0"
   },
   "autoload": {
     "psr-4": {
