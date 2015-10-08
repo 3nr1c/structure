@@ -531,4 +531,22 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($checker->check(array(1)));
         $this->assertFalse($checker->check(array(false)));
     }
+
+    public function testNullOrStringArray() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat(array(
+            "foo" => "null|string[]"
+        ));
+        $checker->setCountStrict(true);
+
+        $this->assertTrue($checker->check(array()));
+        $this->assertTrue($checker->check(array("foo" => null)));
+        $this->assertTrue($checker->check(array("foo" => array())));
+        $this->assertTrue($checker->check(array("foo" => array("hi"))));
+        $this->assertTrue($checker->check(array("foo" => array("hi", "there"))));
+
+        $this->assertFalse($checker->check(array("foo" => "bad")));
+        $this->assertFalse($checker->check(array("foo" => array(null))));
+        $this->assertFalse($checker->check(array("foo" => array("hi", null))));
+    }
 }

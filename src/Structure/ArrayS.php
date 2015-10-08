@@ -437,7 +437,7 @@ class ArrayS extends Structure {
                         } else {
                             // maybe $format is a simple array (type[] or type[int])
                             $structure = new ArrayS();
-                            $structure->setFormat($string);
+                            $structure->setFormat($type);
                             $structure->setCountStrict($this->countStrict);
                             $arrayStructure = true;
                         }

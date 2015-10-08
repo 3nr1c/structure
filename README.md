@@ -421,6 +421,12 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 
 # Changelog
 
+**0.6.0**
+
+* ArrayS: format can be defined with a JSON string
+* ArrayS: format can be defined with a path to a file containing a format in JSON
+* ArrayS: fixed a bug with formats of the type "null|string[]"
+
 **0.5.0**
 
 * Compilation of strings for ArrayS, ScalarS (value sets) and NumericS (integer ranges) to avoid re-parsing
