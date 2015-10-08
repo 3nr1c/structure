@@ -426,6 +426,7 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 * ArrayS: format can be defined with a JSON string
 * ArrayS: format can be defined with a path to a file containing a format in JSON
 * ArrayS: fixed a bug with formats of the type "null|string[]"
+* Structure::typeof is now a public method
 
 **0.5.0**
 
