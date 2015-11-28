@@ -549,4 +549,33 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($checker->check(array("foo" => array(null))));
         $this->assertFalse($checker->check(array("foo" => array("hi", null))));
     }
+
+    public function testSpecificValueArray() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat(array(
+            "foo" => "(string|integer{0, 1})[]"
+        ));
+
+        $this->assertTrue($checker->check(array("foo" => array("abc", "xyz"))));
+        $this->assertTrue($checker->check(array("foo" => array("abc", "xyz", 0))));
+        $this->assertTrue($checker->check(array("foo" => array(1, 1, 1))));
+        $this->assertTrue($checker->check(array("foo" => array(0, 1, 0))));
+        $this->assertFalse($checker->check(array("foo" => array("abc", "xyz", 2))));
+        $this->assertFalse($checker->check(array("foo" => array("abc", false))));
+    }
+
+    public function testSpecificValueArray2() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat(array(
+            "foo" => "(string|integer[1,inf))[]"
+        ));
+
+        $this->assertTrue($checker->check(array("foo" => array("abc", "xyz"))));
+        $this->assertTrue($checker->check(array("foo" => array("abc", "xyz", 1))));
+        $this->assertTrue($checker->check(array("foo" => array(1, 1, 1))));
+        $this->assertFalse($checker->check(array("foo" => array(0, 1, 0))));
+        $this->assertTrue($checker->check(array("foo" => array("abc", "xyz", 2))));
+        $this->assertFalse($checker->check(array("foo" => array("abc", false))));
+        $this->assertFalse($checker->check(array("foo" => array(-1, 1))));
+    }
 }

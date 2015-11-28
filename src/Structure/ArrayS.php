@@ -351,6 +351,14 @@ class ArrayS extends Structure {
          */
         $lengthString = '/^string(\(\d*\.\.\d*\))$/';
 
+        /**
+         * Examples:
+         *  (string|integer)[]
+         *  (string|integer{0,1})[]
+         *  (bool{true}|integer[1,inf))[]
+         */
+        $quickArray = "/^(\\(.+(\\|.+)+\\)|[^\\|]*)\\[(\\d+|\\d*\\+|\\*)?\\]$/";
+
         $identityStructure = array(
             "check" => function($data, $null, &$failed) { return true; },
             "format" => function($data) { return $data; }
@@ -359,12 +367,22 @@ class ArrayS extends Structure {
         // allow "type1|type2|..."
         $types = explode("|", $string);
 
-        /** @var Structure[] $objects */
-        $objects = array();
+        if (preg_match($quickArray, $string)) {
+            $structure = new ArrayS();
+            $structure->setFormat($string);
+            $structure->setCountStrict($this->countStrict);
+            $arrayStructure = true;
 
-        // Use a do-while to check always $type[0]
-        $i = 0;
-        do {
+            $objects = array($structure);
+            $i = count($types) + 1;
+        } else {
+            /** @var Structure[] $objects */
+            $objects = array();
+
+            // Use a do-while to check always $type[0]
+            $i = 0;
+        }
+        while (count($types) > $i) {
             $type = $types[$i];
             if (preg_match($numeric, $type, $matches)) {
                 switch ($type[0]) {
@@ -389,6 +407,11 @@ class ArrayS extends Structure {
             } else if (preg_match($lengthString, $type, $matches)) {
                 $structure = new StringS();
                 $structure->setLength($matches[1]);
+            } else if (preg_match($quickArray, $type, $matches)) {
+                $structure = new ArrayS();
+                $structure->setFormat($type);
+                $structure->setCountStrict($this->countStrict);
+                $arrayStructure = true;
             } else {
                 switch ($type) {
                     case "scalar": $structure = new ScalarS(); break;
@@ -411,6 +434,7 @@ class ArrayS extends Structure {
                         $structure = $identityStructure;
                         break;
                     case "null":
+                    case null:
                         // set structure:null
                         $structure = array(
                             "check" => function($data, $null, &$failed) {
@@ -451,7 +475,8 @@ class ArrayS extends Structure {
 
             // Add the Structure to use it after the loop
             $objects[] = $structure;
-        } while(count($types) > ++$i);
+            $i++;
+        }
 
         /**
          * Define return functions, depending on the number of $objects
