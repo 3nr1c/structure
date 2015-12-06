@@ -589,4 +589,58 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($checker->check(array("a" => "abc", "b" => 1213, "c" => "xyz")));
         $this->assertFalse($checker->check(array("abc", 1213, "xyz")));
     }
+
+    public function testVariableLengthArray() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat("string[2..4]");
+
+        $this->assertFalse($checker->check(array()));
+        $this->assertFalse($checker->check(array("abc")));
+        $this->assertTrue($checker->check(array("abc", "cde")));
+        $this->assertTrue($checker->check(array("abc", "cde", "xyz")));
+        $this->assertTrue($checker->check(array("abc", "cde", "xyz", "asdf")));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", "asdf", "")));
+
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", 3)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", null)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", 3.4)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", true)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", array())));
+    }
+
+    public function testVariableLengthArrayFirstBound() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat("string[2..]");
+
+        $this->assertFalse($checker->check(array()));
+        $this->assertFalse($checker->check(array("abc")));
+        $this->assertTrue($checker->check(array("abc", "cde")));
+        $this->assertTrue($checker->check(array("abc", "cde", "xyz")));
+        $this->assertTrue($checker->check(array("abc", "cde", "xyz", "asdf")));
+        $this->assertTrue($checker->check(array("abc", "cde", "xyz", "asdf", "")));
+
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", 3)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", null)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", 3.4)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", true)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", array())));
+    }
+
+    public function testVariableLengthArraySecondBound() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat("string[..4]");
+
+        $this->assertTrue($checker->check(array()));
+        $this->assertTrue($checker->check(array("abc")));
+        $this->assertTrue($checker->check(array("abc", "cde")));
+        $this->assertTrue($checker->check(array("abc", "cde", "xyz")));
+        $this->assertTrue($checker->check(array("abc", "cde", "xyz", "asdf")));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", "asdf", "")));
+
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", 3)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", null)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", 3.4)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", true)));
+        $this->assertFalse($checker->check(array("abc", "cde", "xyz", array())));
+    }
 }

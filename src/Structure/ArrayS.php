@@ -42,7 +42,7 @@ class ArrayS extends Structure {
                 return;
             }
 
-            $sqBrackets = '\[(\d+|\d*\+|\*)?\]';
+            $sqBrackets = '\[(\d+|\d*\+|\*|\d*\.\.\d*)?\]';
 
             $singleType = '/^([^\|]*)(' . $sqBrackets . ')$/';
             $multipleType = '/^\((.*)\)(' . $sqBrackets . ')$/';
@@ -75,6 +75,14 @@ class ArrayS extends Structure {
             $this->maximumItemNumber = "inf";
         } else if ($length > 2 && $sqBrackets[$length - 2] === '+') {// [n+] case
             $this->minimumItemNumber = substr($sqBrackets, 1, -2);
+        } else if (strpos($sqBrackets, "..") !== false) {
+            $numbers = explode("..", $sqBrackets);
+
+            $min = intval(substr($numbers[0], 1));
+            $this->minimumItemNumber = $min;
+
+            $max = intval($numbers[1]);
+            $this->maximumItemNumber = $max >= $min ? $max : "inf";
         } else {// [n] case
             $count = intval(substr($sqBrackets, 1, -1));
             $this->maximumItemNumber = $count;
@@ -374,7 +382,7 @@ class ArrayS extends Structure {
          *  (string|integer{0,1})[]
          *  (bool{true}|integer[1,inf))[]
          */
-        $quickArray = "/^(\\(.+(\\|.+)+\\)|[^\\|]*)\\[(\\d+|\\d*\\+|\\*)?\\]$/";
+        $quickArray = "/^(\\(.+(\\|.+)+\\)|[^\\|]*)\\[(\\d+|\\d*\\+|\\*|\\d*\\.\\.\\d*)?\\]$/";
 
         $identityStructure = array(
             "check" => function($data, $null, &$failed) { return true; },

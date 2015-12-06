@@ -285,12 +285,16 @@ $array->setFormat("bool[]");
 $array->setFormat("MyClass[3]");
 ```
 
-The characters ```+``` and ```*``` can also be used to test simple arrays. The following expressions are valid:
+The characters ```+``` and ```*``` can also be used to test simple arrays. Something like "[3..5]" can be used to express variable array size. The following expressions are valid:
 
 ```php
 $array->setFormat("string[*]"); // checks for 0 or more strings
 $array->setFormat("integer[+]"); // checks for 1 or more integers
 $array->setFormat("scalar[5+]"); // checks for 5 or more scalars
+
+$array->setFormat("float[3..5]"); // checks for 3 to 5 floats
+$array->setFormat("float[..5]"); // checks for a maximum of 5 floats
+$array->setFormat("float[3..]"); // checks for at least 3 floats
 ```
 
 Types can be mixed using the vertical bar ```|```:
@@ -423,6 +427,7 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 
 **0.6.0**
 
+* ArrayS: arrays can be of variable length! "integer[1..5]", "string[..4]", "numeric[3..]"
 * ArrayS: format can be defined with a JSON string
 * ArrayS: format can be defined with a path to a file containing a format in JSON
 * ArrayS: fixed a bug with formats of the type "null|string[]"
