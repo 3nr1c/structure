@@ -643,4 +643,14 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($checker->check(array("abc", "cde", "xyz", true)));
         $this->assertFalse($checker->check(array("abc", "cde", "xyz", array())));
     }
+
+    public function testEmptyArrayDescription() {
+        $checker = \Structure\Structure::ArrayS("[0]");
+
+        $this->assertTrue($checker->check(array()));
+
+        $this->assertFalse($checker->check(array("abc")));
+        $this->assertFalse($checker->check(array(null)));
+        $this->assertFalse($checker->check("abc"));
+    }
 }
