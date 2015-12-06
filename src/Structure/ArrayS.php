@@ -20,6 +20,7 @@ class ArrayS extends Structure {
     protected $countStrict = true;
 
     protected $minimumItemNumber = 0;
+    protected $maximumItemNumber = "inf";
     protected $containsNullItems = null;
 
     protected static $compiledFormats = array();
@@ -60,6 +61,32 @@ class ArrayS extends Structure {
     }
 
     /**
+     * Parses expressions matching /\[(\d+|\d*\+|\*)?\]/
+     *
+     * @param string $sqBrackets
+     */
+    protected function parseArraySqBrackets($sqBrackets) {
+        $length = strlen($sqBrackets);
+        if ($sqBrackets === '[]' || $sqBrackets === '[*]') {
+            $this->minimumItemNumber = 0;
+            $this->maximumItemNumber = "inf";
+        } else if ($sqBrackets === '[+]') {
+            $this->minimumItemNumber = 1;
+            $this->maximumItemNumber = "inf";
+        } else if ($length > 2 && $sqBrackets[$length - 2] === '+') {// [n+] case
+            $this->minimumItemNumber = substr($sqBrackets, 1, -2);
+        } else {// [n] case
+            $count = intval(substr($sqBrackets, 1, -1));
+            $this->maximumItemNumber = $count;
+            if ($this->searchNullItems()) {
+                $this->minimumItemNumber = 0;
+            } else {
+                $this->minimumItemNumber = $this->maximumItemNumber;
+            }
+        }
+    }
+
+    /**
      * Takes a string argument that can be either a valid JSON string, or
      * a path to a file containing a valid JSON string. If the syntax is
      * invalid or the file can't be accessed, an \Exception will be thrown
@@ -91,30 +118,16 @@ class ArrayS extends Structure {
         throw new \Exception("Invalid Json format or file");
     }
 
-    /**
-     * Parses expressions matching /\[(\d+|\d*\+|\*)?\]/
-     *
-     * @param string $sqBrackets
-     */
-    protected function parseArraySqBrackets($sqBrackets) {
-        $length = strlen($sqBrackets);
-        if ($sqBrackets === '[]' || $sqBrackets === '[*]') {
-            $this->minimumItemNumber = 0;
-        } else if ($sqBrackets === '[+]') {
-            $this->minimumItemNumber = 1;
-        } else if ($length > 2 && $sqBrackets[$length - 2] === '+') {// [n+] case
-            $this->minimumItemNumber = substr($sqBrackets, 1, -2);
-        } else {// [n] case
-            $count = intval(substr($sqBrackets, 1, -1));
-            $this->format = $count > 0 ? array_fill(0, $count, $this->format) : array();
-        }
-    }
 
 
     protected function searchNullItems() {
         if (is_null($this->containsNullItems)) {
             $this->containsNullItems = false;
-            foreach ($this->format as $item) {
+
+            $format = $this->format;
+            if (is_string($format)) $format = array($format);
+
+            foreach ($format as $item) {
                 if (is_string($item) && strpos($item, "null") !== false) {
                     $this->containsNullItems = true;
                     break;
@@ -227,7 +240,11 @@ class ArrayS extends Structure {
                     $valid = false;
                 }
             }
-            return $valid && count($data) >= $this->minimumItemNumber;
+            $count = count($data);
+            $countRange = new IntegerS( );
+            $countRange->setRange("[" . $this->minimumItemNumber . "," . $this->maximumItemNumber . "]");
+
+            return $valid && $countRange->check($count);
         }
 
         /**

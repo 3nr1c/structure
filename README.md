@@ -428,6 +428,7 @@ You can read more documentation by running ```composer doc``` (phpdoc needed) an
 * ArrayS: fixed a bug with formats of the type "null|string[]"
 * ArrayS: literal ```null``` can be used in place of the ```"null"``` string
 * ArrayS: an array item can be "(string{a,b,c}|integer[3,10])[]"
+* ArrayS: "string[3]" can now be used to describe an associative array
 * Structure::typeof is now a public method
 
 **0.5.0**

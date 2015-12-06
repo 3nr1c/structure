@@ -578,4 +578,15 @@ class ArrayTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($checker->check(array("foo" => array("abc", false))));
         $this->assertFalse($checker->check(array("foo" => array(-1, 1))));
     }
+
+    public function testSimpleDescriptionKeyValue() {
+        $checker = new \Structure\ArrayS();
+        $checker->setFormat("string[3]");
+
+        $this->assertTrue($checker->check(array("a" => "abc", "b" => "pqr", "c" => "xyz")));
+        $this->assertTrue($checker->check(array("abc", "pqr", "xyz")));
+        $this->assertFalse($checker->check(array("a" => "abc", "c" => "xyz")));
+        $this->assertFalse($checker->check(array("a" => "abc", "b" => 1213, "c" => "xyz")));
+        $this->assertFalse($checker->check(array("abc", 1213, "xyz")));
+    }
 }
