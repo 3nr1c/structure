@@ -237,7 +237,11 @@ class ArrayS extends Structure {
         if (is_null($data)) $data = $this->data;
 
         if ($this->format === "array") {
-            return true;// no need to run again is_array
+            $count = count($data);
+            $countRange = new IntegerS( );
+            $countRange->setRange("[" . $this->minimumItemNumber . "," . $this->maximumItemNumber . "]");
+
+            return $countRange->check($count);// no need to run again is_array
         }
 
         if (is_string($this->format)) {
